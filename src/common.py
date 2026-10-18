@@ -1,5 +1,4 @@
 """Contrato compartido del proyecto. No romper sin avisar al otro (ver plan, sección 4.1)."""
-import os
 import random
 from pathlib import Path
 
