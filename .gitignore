@@ -1,0 +1,22 @@
+# --- Datos: se regeneran con download.py y prepare_data.py; se comparten por Kaggle
+data/
+
+# --- Pesos de modelos: pesan mucho; se publican en GitHub Releases
+*.pt
+*.pth
+
+# --- Vídeos propios: se comparten por carpeta compartida
+videos/
+
+# --- Python
+__pycache__/
+*.pyc
+.venv/
+
+# --- Jupyter
+.ipynb_checkpoints/
+
+# --- Editores y sistema
+.vscode/
+.idea/
+.DS_Store
