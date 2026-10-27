@@ -1,5 +1,8 @@
 # --- Datos: se regeneran con download.py y prepare_data.py; se comparten por Kaggle
-data/
+# (data/* y no data/: git no puede re-incluir ficheros de una carpeta ignorada entera)
+data/*
+!data/splits.csv
+!data/stats.json
 
 # --- Pesos de modelos: pesan mucho; se publican en GitHub Releases
 *.pt
