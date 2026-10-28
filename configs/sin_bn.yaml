@@ -1,0 +1,5 @@
+# Ablación: igual que completo pero sin BatchNorm.
+name: sin_bn
+use_bn: false
+use_dropout: true
+augment: true

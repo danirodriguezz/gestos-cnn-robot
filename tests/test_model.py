@@ -38,6 +38,26 @@ def test_gradcam_layer_es_la_ultima_conv(use_bn):
     assert model.gradcam_layer is convs[-1] and model.gradcam_layer.out_channels == 256
 
 
+def test_resnet18():
+    model = build_model(arch="resnet18").eval()
+    with torch.no_grad():
+        assert model(batch()).shape == (2, len(CLASSES))
+    convs = [m for m in model.modules() if isinstance(m, nn.Conv2d)]
+    assert model.gradcam_layer is convs[-1] and model.gradcam_layer.out_channels == 512
+    assert 11e6 < count_params(model) < 11.5e6           # ResNet18 con fc de 9 salidas: ≈ 11,2 M
+
+
+def test_guardar_y_cargar_resnet18(tmp_path):
+    set_seed()
+    model = build_model(arch="resnet18").eval()
+    path = tmp_path / "best.pt"
+    save_checkpoint(path, model, {"arch": "resnet18", "pretrained": True})
+    loaded, _ = load_checkpoint(path)                    # no descarga nada: pretrained no está en MODEL_KEYS
+    x = batch()
+    with torch.no_grad():
+        assert torch.equal(model(x), loaded(x))
+
+
 def test_arch_desconocida():
     with pytest.raises(ValueError):
         build_model(arch="vgg")
