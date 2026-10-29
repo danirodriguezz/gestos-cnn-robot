@@ -1,0 +1,16 @@
+name: sin_bn
+arch: gesturecnn
+pretrained: false
+use_bn: false
+use_dropout: true
+augment: true
+lr: 0.001
+weight_decay: 0.0001
+batch_size: 64
+epochs: 50
+patience: 6
+scheduler: true
+num_workers: 2
+seed: 42
+data: real
+mock_n: 512

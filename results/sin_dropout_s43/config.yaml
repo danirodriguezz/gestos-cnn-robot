@@ -1,0 +1,16 @@
+name: sin_dropout_s43
+arch: gesturecnn
+pretrained: false
+use_bn: true
+use_dropout: false
+augment: true
+lr: 0.001
+weight_decay: 0.0001
+batch_size: 64
+epochs: 50
+patience: 6
+scheduler: true
+num_workers: 2
+seed: 43
+data: real
+mock_n: 512

@@ -23,3 +23,16 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+# --- Caché de predicciones de src/analysis.py (se regenera con los best.pt)
+results/*/preds_*.csv
+
+# --- LaTeX: auxiliares de compilación (el PDF sí se sube)
+informe/*.aux
+informe/*.bbl
+informe/*.blg
+informe/*.fdb_latexmk
+informe/*.fls
+informe/*.log
+informe/*.out
+informe/*.toc
+informe/*.synctex.gz

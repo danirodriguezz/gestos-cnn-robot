@@ -1,0 +1,163 @@
+[completo] cuda · 2,357,673 parámetros
+época   1 · train 2.1550 / 0.185 · val 2.0433 / 0.257 · lr 1.0e-03 · 25.5s *
+época   2 · train 1.6689 / 0.370 · val 1.2728 / 0.539 · lr 1.0e-03 · 25.1s *
+época   3 · train 0.9741 / 0.649 · val 0.6974 / 0.771 · lr 1.0e-03 · 25.3s *
+época   4 · train 0.5590 / 0.810 · val 0.3902 / 0.875 · lr 1.0e-03 · 25.2s *
+época   5 · train 0.3856 / 0.873 · val 0.2751 / 0.909 · lr 1.0e-03 · 25.3s *
+época   6 · train 0.2721 / 0.915 · val 0.1767 / 0.947 · lr 1.0e-03 · 25.3s *
+época   7 · train 0.2128 / 0.933 · val 0.1320 / 0.958 · lr 1.0e-03 · 25.3s *
+época   8 · train 0.1888 / 0.939 · val 0.1327 / 0.963 · lr 1.0e-03 · 25.3s
+época   9 · train 0.1625 / 0.948 · val 0.1967 / 0.940 · lr 1.0e-03 · 25.4s
+época  10 · train 0.1397 / 0.956 · val 0.1269 / 0.958 · lr 1.0e-03 · 25.5s *
+época  11 · train 0.1257 / 0.959 · val 0.1412 / 0.960 · lr 1.0e-03 · 25.4s
+época  12 · train 0.1194 / 0.963 · val 0.1438 / 0.950 · lr 1.0e-03 · 25.4s
+época  13 · train 0.1152 / 0.963 · val 0.0692 / 0.979 · lr 1.0e-03 · 25.5s *
+época  14 · train 0.1135 / 0.965 · val 0.0616 / 0.978 · lr 1.0e-03 · 25.5s *
+época  15 · train 0.0988 / 0.968 · val 0.0771 / 0.975 · lr 1.0e-03 · 25.5s
+época  16 · train 0.1014 / 0.967 · val 0.1093 / 0.962 · lr 1.0e-03 · 25.5s
+época  17 · train 0.0949 / 0.969 · val 0.0528 / 0.985 · lr 1.0e-03 · 25.5s *
+época  18 · train 0.0916 / 0.970 · val 0.0860 / 0.972 · lr 1.0e-03 · 25.5s
+época  19 · train 0.0910 / 0.971 · val 0.0747 / 0.974 · lr 1.0e-03 · 25.5s
+época  20 · train 0.0930 / 0.971 · val 0.0785 / 0.978 · lr 1.0e-03 · 25.5s
+época  21 · train 0.0860 / 0.974 · val 0.0781 / 0.973 · lr 1.0e-03 · 25.4s
+época  22 · train 0.0522 / 0.983 · val 0.0530 / 0.983 · lr 5.0e-04 · 25.5s
+época  23 · train 0.0456 / 0.985 · val 0.0490 / 0.987 · lr 5.0e-04 · 25.5s *
+época  24 · train 0.0396 / 0.988 · val 0.0419 / 0.987 · lr 5.0e-04 · 25.5s *
+época  25 · train 0.0363 / 0.989 · val 0.0433 / 0.989 · lr 5.0e-04 · 25.5s
+época  26 · train 0.0409 / 0.988 · val 0.0570 / 0.983 · lr 5.0e-04 · 25.5s
+época  27 · train 0.0373 / 0.989 · val 0.0406 / 0.988 · lr 5.0e-04 · 25.5s *
+época  28 · train 0.0432 / 0.985 · val 0.0479 / 0.984 · lr 5.0e-04 · 25.5s
+época  29 · train 0.0453 / 0.985 · val 0.0554 / 0.983 · lr 5.0e-04 · 25.5s
+época  30 · train 0.0449 / 0.988 · val 0.0773 / 0.975 · lr 5.0e-04 · 25.5s
+época  31 · train 0.0425 / 0.987 · val 0.0563 / 0.984 · lr 5.0e-04 · 25.5s
+época  32 · train 0.0337 / 0.989 · val 0.0416 / 0.989 · lr 2.5e-04 · 25.5s
+época  33 · train 0.0232 / 0.993 · val 0.0393 / 0.991 · lr 2.5e-04 · 25.5s *
+época  34 · train 0.0178 / 0.995 · val 0.0638 / 0.981 · lr 2.5e-04 · 25.5s
+época  35 · train 0.0247 / 0.993 · val 0.0385 / 0.988 · lr 2.5e-04 · 25.5s *
+época  36 · train 0.0193 / 0.995 · val 0.0396 / 0.989 · lr 2.5e-04 · 25.5s
+época  37 · train 0.0217 / 0.993 · val 0.0420 / 0.988 · lr 2.5e-04 · 25.5s
+época  38 · train 0.0190 / 0.994 · val 0.0358 / 0.990 · lr 2.5e-04 · 25.7s *
+época  39 · train 0.0229 / 0.992 · val 0.0521 / 0.986 · lr 2.5e-04 · 25.4s
+época  40 · train 0.0211 / 0.994 · val 0.0520 / 0.986 · lr 2.5e-04 · 25.4s
+época  41 · train 0.0210 / 0.993 · val 0.0377 / 0.991 · lr 2.5e-04 · 25.4s
+época  42 · train 0.0199 / 0.994 · val 0.0451 / 0.988 · lr 2.5e-04 · 25.4s
+época  43 · train 0.0151 / 0.995 · val 0.0379 / 0.989 · lr 1.3e-04 · 25.4s
+época  44 · train 0.0152 / 0.995 · val 0.0362 / 0.990 · lr 1.3e-04 · 25.4s
+Parada anticipada: 6 épocas sin mejorar val_loss
+Mejor val_loss 0.0358 · resultados en /home/daniel/Documentos/Universidad/4Year/Aprendizaje_Automatico_2/Practica_Redes_Convolucionales/gestos-cnn-robot/results/completo
+[sin_dropout] cuda · 2,357,673 parámetros
+época   1 · train 1.8810 / 0.299 · val 1.3854 / 0.512 · lr 1.0e-03 · 25.4s *
+época   2 · train 0.9132 / 0.693 · val 0.7820 / 0.749 · lr 1.0e-03 · 25.4s *
+época   3 · train 0.3690 / 0.883 · val 0.3531 / 0.885 · lr 1.0e-03 · 25.4s *
+época   4 · train 0.2195 / 0.930 · val 0.2032 / 0.933 · lr 1.0e-03 · 25.4s *
+época   5 · train 0.1700 / 0.947 · val 0.1924 / 0.936 · lr 1.0e-03 · 25.4s *
+época   6 · train 0.1285 / 0.957 · val 0.1339 / 0.961 · lr 1.0e-03 · 25.4s *
+época   7 · train 0.1088 / 0.964 · val 0.1565 / 0.946 · lr 1.0e-03 · 25.3s
+época   8 · train 0.0994 / 0.968 · val 0.0862 / 0.974 · lr 1.0e-03 · 25.4s *
+época   9 · train 0.0887 / 0.971 · val 0.1896 / 0.936 · lr 1.0e-03 · 25.4s
+época  10 · train 0.0788 / 0.974 · val 0.1051 / 0.965 · lr 1.0e-03 · 25.4s
+época  11 · train 0.0737 / 0.976 · val 0.1135 / 0.963 · lr 1.0e-03 · 25.4s
+época  12 · train 0.0716 / 0.976 · val 0.1340 / 0.954 · lr 1.0e-03 · 25.4s
+época  13 · train 0.0435 / 0.985 · val 0.0606 / 0.982 · lr 5.0e-04 · 25.5s *
+época  14 · train 0.0365 / 0.989 · val 0.0549 / 0.983 · lr 5.0e-04 · 25.4s *
+época  15 · train 0.0350 / 0.990 · val 0.0581 / 0.981 · lr 5.0e-04 · 25.3s
+época  16 · train 0.0361 / 0.988 · val 0.0460 / 0.984 · lr 5.0e-04 · 25.4s *
+época  17 · train 0.0292 / 0.992 · val 0.0499 / 0.986 · lr 5.0e-04 · 25.3s
+época  18 · train 0.0374 / 0.988 · val 0.0671 / 0.978 · lr 5.0e-04 · 25.3s
+época  19 · train 0.0328 / 0.991 · val 0.0551 / 0.983 · lr 5.0e-04 · 25.3s
+época  20 · train 0.0329 / 0.990 · val 0.0492 / 0.984 · lr 5.0e-04 · 25.3s
+época  21 · train 0.0196 / 0.994 · val 0.0446 / 0.987 · lr 2.5e-04 · 25.4s *
+época  22 · train 0.0159 / 0.995 · val 0.0433 / 0.987 · lr 2.5e-04 · 25.4s *
+época  23 · train 0.0154 / 0.995 · val 0.0380 / 0.989 · lr 2.5e-04 · 25.4s *
+época  24 · train 0.0119 / 0.997 · val 0.0444 / 0.987 · lr 2.5e-04 · 25.3s
+época  25 · train 0.0094 / 0.997 · val 0.0474 / 0.986 · lr 2.5e-04 · 25.4s
+época  26 · train 0.0154 / 0.995 · val 0.0659 / 0.978 · lr 2.5e-04 · 25.4s
+época  27 · train 0.0160 / 0.995 · val 0.0729 / 0.979 · lr 2.5e-04 · 25.4s
+época  28 · train 0.0110 / 0.997 · val 0.0389 / 0.988 · lr 1.3e-04 · 25.4s
+época  29 · train 0.0084 / 0.998 · val 0.0476 / 0.986 · lr 1.3e-04 · 25.4s
+Parada anticipada: 6 épocas sin mejorar val_loss
+Mejor val_loss 0.0380 · resultados en /home/daniel/Documentos/Universidad/4Year/Aprendizaje_Automatico_2/Practica_Redes_Convolucionales/gestos-cnn-robot/results/sin_dropout
+[sin_bn] cuda · 2,354,729 parámetros
+época   1 · train 2.1789 / 0.139 · val 2.1548 / 0.168 · lr 1.0e-03 · 22.2s *
+época   2 · train 2.1162 / 0.175 · val 2.0219 / 0.197 · lr 1.0e-03 · 22.0s *
+época   3 · train 2.0345 / 0.203 · val 1.8422 / 0.262 · lr 1.0e-03 · 22.0s *
+época   4 · train 1.8553 / 0.270 · val 1.6568 / 0.378 · lr 1.0e-03 · 21.9s *
+época   5 · train 1.5677 / 0.403 · val 1.1652 / 0.593 · lr 1.0e-03 · 21.9s *
+época   6 · train 1.2581 / 0.545 · val 0.8884 / 0.697 · lr 1.0e-03 · 21.9s *
+época   7 · train 0.9578 / 0.670 · val 0.5538 / 0.821 · lr 1.0e-03 · 21.9s *
+época   8 · train 0.8086 / 0.725 · val 0.5005 / 0.848 · lr 1.0e-03 · 21.9s *
+época   9 · train 0.7039 / 0.765 · val 0.4642 / 0.845 · lr 1.0e-03 · 21.9s *
+época  10 · train 0.6186 / 0.795 · val 0.3555 / 0.881 · lr 1.0e-03 · 21.9s *
+época  11 · train 0.5744 / 0.813 · val 0.3448 / 0.890 · lr 1.0e-03 · 21.9s *
+época  12 · train 0.5131 / 0.827 · val 0.3085 / 0.895 · lr 1.0e-03 · 21.9s *
+época  13 · train 0.4914 / 0.845 · val 0.2992 / 0.906 · lr 1.0e-03 · 21.9s *
+época  14 · train 0.4556 / 0.854 · val 0.2563 / 0.923 · lr 1.0e-03 · 21.9s *
+época  15 · train 0.4122 / 0.868 · val 0.2452 / 0.925 · lr 1.0e-03 · 21.9s *
+época  16 · train 0.3869 / 0.874 · val 0.2083 / 0.933 · lr 1.0e-03 · 21.9s *
+época  17 · train 0.3732 / 0.878 · val 0.2196 / 0.943 · lr 1.0e-03 · 21.9s
+época  18 · train 0.3523 / 0.889 · val 0.2107 / 0.939 · lr 1.0e-03 · 21.9s
+época  19 · train 0.3354 / 0.894 · val 0.1834 / 0.942 · lr 1.0e-03 · 21.9s *
+época  20 · train 0.3228 / 0.897 · val 0.2040 / 0.934 · lr 1.0e-03 · 21.9s
+época  21 · train 0.3250 / 0.899 · val 0.1789 / 0.949 · lr 1.0e-03 · 21.9s *
+época  22 · train 0.2994 / 0.908 · val 0.1793 / 0.948 · lr 1.0e-03 · 21.9s
+época  23 · train 0.2873 / 0.911 · val 0.1701 / 0.949 · lr 1.0e-03 · 21.9s *
+época  24 · train 0.2777 / 0.914 · val 0.1830 / 0.946 · lr 1.0e-03 · 21.9s
+época  25 · train 0.2586 / 0.917 · val 0.1497 / 0.954 · lr 1.0e-03 · 21.9s *
+época  26 · train 0.2616 / 0.918 · val 0.1733 / 0.945 · lr 1.0e-03 · 21.9s
+época  27 · train 0.2459 / 0.922 · val 0.1544 / 0.952 · lr 1.0e-03 · 21.9s
+época  28 · train 0.2370 / 0.926 · val 0.1470 / 0.955 · lr 1.0e-03 · 21.9s *
+época  29 · train 0.2245 / 0.928 · val 0.1406 / 0.958 · lr 1.0e-03 · 21.9s *
+época  30 · train 0.2396 / 0.928 · val 0.1389 / 0.959 · lr 1.0e-03 · 21.9s *
+época  31 · train 0.2191 / 0.930 · val 0.1316 / 0.960 · lr 1.0e-03 · 21.9s *
+época  32 · train 0.2099 / 0.935 · val 0.1373 / 0.961 · lr 1.0e-03 · 21.9s
+época  33 · train 0.2032 / 0.936 · val 0.1308 / 0.960 · lr 1.0e-03 · 21.9s *
+época  34 · train 0.1971 / 0.938 · val 0.1131 / 0.967 · lr 1.0e-03 · 21.8s *
+época  35 · train 0.2023 / 0.937 · val 0.1151 / 0.967 · lr 1.0e-03 · 21.9s
+época  36 · train 0.1906 / 0.940 · val 0.1390 / 0.962 · lr 1.0e-03 · 21.9s
+época  37 · train 0.1953 / 0.939 · val 0.1180 / 0.968 · lr 1.0e-03 · 21.8s
+época  38 · train 0.1949 / 0.940 · val 0.1294 / 0.963 · lr 1.0e-03 · 21.8s
+época  39 · train 0.1477 / 0.953 · val 0.1102 / 0.969 · lr 5.0e-04 · 21.8s *
+época  40 · train 0.1435 / 0.953 · val 0.1083 / 0.971 · lr 5.0e-04 · 21.9s *
+época  41 · train 0.1376 / 0.957 · val 0.1010 / 0.971 · lr 5.0e-04 · 21.9s *
+época  42 · train 0.1335 / 0.957 · val 0.1018 / 0.968 · lr 5.0e-04 · 21.9s
+época  43 · train 0.1284 / 0.961 · val 0.0959 / 0.977 · lr 5.0e-04 · 21.8s *
+época  44 · train 0.1290 / 0.960 · val 0.0977 / 0.975 · lr 5.0e-04 · 21.9s
+época  45 · train 0.1224 / 0.962 · val 0.1081 / 0.972 · lr 5.0e-04 · 21.8s
+época  46 · train 0.1161 / 0.961 · val 0.0957 / 0.972 · lr 5.0e-04 · 21.8s *
+época  47 · train 0.1267 / 0.959 · val 0.0928 / 0.975 · lr 5.0e-04 · 21.8s *
+época  48 · train 0.1198 / 0.963 · val 0.0972 / 0.973 · lr 5.0e-04 · 21.8s
+época  49 · train 0.1304 / 0.959 · val 0.1106 / 0.970 · lr 5.0e-04 · 21.8s
+época  50 · train 0.1154 / 0.964 · val 0.0952 / 0.976 · lr 5.0e-04 · 21.8s
+Mejor val_loss 0.0928 · resultados en /home/daniel/Documentos/Universidad/4Year/Aprendizaje_Automatico_2/Practica_Redes_Convolucionales/gestos-cnn-robot/results/sin_bn
+[sin_aug] cuda · 2,357,673 parámetros
+época   1 · train 1.8733 / 0.304 · val 1.4321 / 0.504 · lr 1.0e-03 · 25.3s *
+época   2 · train 0.8651 / 0.707 · val 0.4869 / 0.829 · lr 1.0e-03 · 25.2s *
+época   3 · train 0.3937 / 0.874 · val 0.4639 / 0.842 · lr 1.0e-03 · 25.3s *
+época   4 · train 0.2574 / 0.917 · val 0.2358 / 0.928 · lr 1.0e-03 · 25.3s *
+época   5 · train 0.1827 / 0.944 · val 0.1868 / 0.939 · lr 1.0e-03 · 25.3s *
+época   6 · train 0.1364 / 0.957 · val 0.1567 / 0.951 · lr 1.0e-03 · 25.3s *
+época   7 · train 0.1109 / 0.967 · val 0.1027 / 0.968 · lr 1.0e-03 · 25.3s *
+época   8 · train 0.0968 / 0.971 · val 0.1267 / 0.961 · lr 1.0e-03 · 25.3s
+época   9 · train 0.0869 / 0.973 · val 0.1381 / 0.954 · lr 1.0e-03 · 25.3s
+época  10 · train 0.0753 / 0.977 · val 0.0689 / 0.977 · lr 1.0e-03 · 25.3s *
+época  11 · train 0.0590 / 0.982 · val 0.1678 / 0.949 · lr 1.0e-03 · 25.2s
+época  12 · train 0.0598 / 0.981 · val 0.0906 / 0.974 · lr 1.0e-03 · 25.2s
+época  13 · train 0.0622 / 0.981 · val 0.0864 / 0.971 · lr 1.0e-03 · 25.2s
+época  14 · train 0.0553 / 0.983 · val 0.1301 / 0.957 · lr 1.0e-03 · 25.3s
+época  15 · train 0.0230 / 0.994 · val 0.0466 / 0.984 · lr 5.0e-04 · 25.3s *
+época  16 · train 0.0173 / 0.995 · val 0.0458 / 0.987 · lr 5.0e-04 · 25.3s *
+época  17 · train 0.0151 / 0.996 · val 0.0449 / 0.987 · lr 5.0e-04 · 25.3s *
+época  18 · train 0.0131 / 0.996 · val 0.0622 / 0.982 · lr 5.0e-04 · 25.3s
+época  19 · train 0.0136 / 0.996 · val 0.0590 / 0.982 · lr 5.0e-04 · 25.3s
+época  20 · train 0.0135 / 0.996 · val 0.0795 / 0.974 · lr 5.0e-04 · 25.3s
+época  21 · train 0.0179 / 0.995 · val 0.0525 / 0.986 · lr 5.0e-04 · 25.3s
+época  22 · train 0.0091 / 0.998 · val 0.0537 / 0.984 · lr 2.5e-04 · 25.3s
+época  23 · train 0.0053 / 0.999 · val 0.0455 / 0.986 · lr 2.5e-04 · 25.3s
+Parada anticipada: 6 épocas sin mejorar val_loss
+Mejor val_loss 0.0449 · resultados en /home/daniel/Documentos/Universidad/4Year/Aprendizaje_Automatico_2/Practica_Redes_Convolucionales/gestos-cnn-robot/results/sin_aug
+
+experimento     épocas   mejor  val_loss  val_acc
+completo            44      38    0.0358    0.990
+sin_dropout         29      23    0.0380    0.989
+sin_bn              50      47    0.0928    0.975
+sin_aug             23      17    0.0449    0.987

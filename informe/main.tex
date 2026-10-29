@@ -1,0 +1,73 @@
+% Informe de la práctica: control de un robot mediante gestos con una CNN.
+% Compilar desde informe/:  latexmk -pdf -jobname=informe main.tex   (las cifras salen de generado/resultados.tex,
+% que escribe src/analysis.py; las figuras se leen de ../results/)
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-tabla,es-nodecimaldot,es-noshorthands]{babel}
+\spanishplainpercent        % \% normal (con babel-spanish falla dentro de $...$)
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage[inline]{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+\usepackage[most]{tcolorbox}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage[spanish,noabbrev]{cleveref}
+\crefname{table}{tabla}{tablas}\Crefname{table}{Tabla}{Tablas}
+\usepackage{fancyhdr}
+
+\graphicspath{{../results/}}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{3pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Control de un robot mediante gestos con una CNN}
+\fancyhead[R]{\small Aprendizaje Automático 2}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Huecos que debe completar Carlos (sección de la demo)
+\newtcolorbox{pendientebox}{colback=Apricot!15,colframe=BurntOrange,boxrule=0.6pt,arc=2pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,fontupper=\small}
+\newcommand{\pendiente}[1]{\begin{pendientebox}\textbf{Pendiente (Carlos):} #1\end{pendientebox}}
+
+\newcommand{\cls}[1]{\textit{#1}}          % nombre de clase de HaGRID
+\newcommand{\code}[1]{\texttt{#1}}
+
+\input{generado/resultados}
+
+\title{\textbf{Control de un robot mediante gestos de la mano\\con una red convolucional entrenada desde cero}}
+\author{Daniel Rodríguez Alonso \and Carlos Falcón Brito}
+\date{Aprendizaje Automático 2 · Práctica de redes convolucionales\\[2pt] 31 de octubre de 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\input{secciones/resumen}
+\input{secciones/introduccion}
+\input{secciones/relacionado}
+\input{secciones/datos}
+\input{secciones/metodos}
+\input{secciones/resultados}
+\input{secciones/demo}
+\input{secciones/discusion}
+\input{secciones/conclusiones}
+\input{secciones/reparto}
+
+\bibliographystyle{unsrtnat}
+\bibliography{referencias}
+
+\end{document}

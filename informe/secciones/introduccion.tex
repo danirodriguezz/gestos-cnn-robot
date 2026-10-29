@@ -1,0 +1,54 @@
+\section{Introducción}
+\label{sec:introduccion}
+
+Los gestos de la mano son una forma natural de dar órdenes a una máquina sin mando ni contacto.
+Esta ventaja es especialmente útil en entornos ruidosos o industriales, donde la voz no es
+fiable, o cuando el operador tiene las manos ocupadas y no puede manejar un mando
+\citep{pisharady2015review}. Para un robot, sin embargo, no basta con reconocer gestos: hace falta
+un \emph{vocabulario de órdenes} con un significado preciso para cada uno y, sobre todo, una forma
+segura de no hacer nada. Por eso este trabajo plantea el problema como la clasificación de un
+conjunto cerrado de órdenes más una \emph{clase nula} (\cls{no\_gesture}) que deja el robot
+quieto, en lugar de como un reconocimiento de gestos arbitrarios.
+
+Este planteamiento impone tres requisitos que guían todo el diseño experimental:
+\begin{enumerate}
+  \item \textbf{Robustez ante personas nuevas.} El robot tendrá que obedecer a personas que el
+    modelo nunca vio. Por tanto, la estimación del rendimiento debe hacerse con personas ausentes
+    del entrenamiento; una partición aleatoria por imagen sería optimista, porque la misma persona,
+    con el mismo fondo y la misma iluminación, aparecería a ambos lados \citep{kaufman2012leakage}.
+  \item \textbf{Una clase nula fiable.} Confundir una mano en reposo con una orden mueve el robot
+    sin querer, que es el error más costoso en la práctica.
+  \item \textbf{Bajo coste de inferencia.} La clasificación debe ejecutarse en tiempo real en un
+    ordenador portátil, lo que favorece modelos pequeños.
+\end{enumerate}
+
+\paragraph{Objetivos.}
+El objetivo principal es alcanzar al menos un 85\,\% de exactitud en test con personas no vistas,
+usando una red convolucional diseñada y entrenada desde cero en PyTorch \citep{paszke2019pytorch}.
+La red debe incluir convolución, \emph{pooling}, normalización por lotes y \emph{dropout}, y su
+entrenamiento debe usar parada anticipada sobre la pérdida de validación con restauración de los
+mejores pesos. Además, nos propusimos analizar el modelo con una matriz de confusión, mapas
+Grad-CAM y un estudio de ablación (con y sin \emph{dropout}, normalización por lotes y aumento
+de datos). Como extensiones opcionales, el plan incluía comparar con un ResNet18 preentrenado y
+construir una demo en tiempo real que controle un robot simulado en ROS\,2.
+
+\paragraph{Contribuciones.}
+\begin{itemize}
+  \item Un \emph{pipeline} de datos reproducible sobre HaGRID: recorte de manos a partir de las
+    cajas anotadas, una clase nula construida con las manos que no hacen el gesto y una partición
+    estratificada \emph{por persona} sin personas compartidas entre particiones
+    (\cref{sec:datos}).
+  \item GestureCNN, una red de \ParamsFinal{} parámetros que alcanza un \AccTestFinal{} de
+    exactitud en test, con un intervalo de confianza que tiene en cuenta la dependencia entre
+    imágenes de una misma persona (\cref{sec:resultados}).
+  \item Un estudio de ablación con dos semillas y pruebas de McNemar pareadas, que separa los
+    efectos reales de la variación entre ejecuciones (\cref{sec:ablacion}).
+  \item Una comparación con ResNet18 que incluye el coste computacional (parámetros, operaciones y
+    latencia) y un análisis cualitativo de los errores con Grad-CAM.
+\end{itemize}
+
+El resto del documento se organiza así: la \cref{sec:relacionado} resume el trabajo relacionado;
+la \cref{sec:datos} describe los datos y la partición; la \cref{sec:metodos}, el preprocesado, la
+arquitectura y el protocolo experimental; la \cref{sec:resultados} presenta los resultados; la
+\cref{sec:demo}, el diseño de la demo; la \cref{sec:discusion} discute los resultados y sus
+limitaciones, y la \cref{sec:conclusiones} concluye.

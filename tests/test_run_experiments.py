@@ -50,3 +50,10 @@ def test_valida_todas_las_configs_antes_de_entrenar(tmp_path):
 def test_rechaza_nombres_repetidos(tmp_path):
     with pytest.raises(ValueError):
         run([CONFIGS_DIR / "completo.yaml"] * 2, results_dir=tmp_path, **MOCK)
+
+
+def test_otra_semilla_escribe_en_otra_carpeta(tmp_path):
+    rows = run([CONFIGS_DIR / "completo.yaml"], results_dir=tmp_path, seed=43, **MOCK)
+    assert rows[0]["name"] == "completo_s43"
+    _, cfg = load_checkpoint(tmp_path / "completo_s43" / "best.pt")
+    assert cfg["seed"] == 43 and not (tmp_path / "completo").exists()

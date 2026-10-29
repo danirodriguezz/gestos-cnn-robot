@@ -1,0 +1,74 @@
+\section{Discusión}
+\label{sec:discusion}
+
+\paragraph{¿Es creíble una exactitud del 99\,\%?}
+Una exactitud tan alta debe tratarse con cautela, porque la causa más habitual de resultados
+demasiado buenos es una fuga de información entre entrenamiento y test \citep{kaufman2012leakage}.
+Nuestro plan de trabajo consideraba de hecho un resultado por encima del 98\,\% como una señal de
+alarma. Hemos descartado las fugas más probables:
+\begin{enumerate*}[label=(\roman*)]
+  \item la partición es por persona y una prueba automática confirma que no hay personas
+    compartidas;
+  \item las estadísticas de normalización se calculan solo con entrenamiento;
+  \item todas las decisiones se tomaron con validación, y el test se evaluó una sola vez y
+    después de elegir el modelo; y
+  \item validación y test, con personas distintas, dan resultados casi idénticos.
+\end{enumerate*}
+Creemos que la exactitud alta se explica más bien por la naturaleza de la tarea tal como la
+hemos planteado. Los recortes se obtienen de las cajas anotadas a mano, así que la mano siempre
+está centrada y completa. Los gestos de HaGRID están posados deliberadamente para la cámara, y
+la mayoría de las clases tienen formas claramente distintas. La dificultad residual se concentra en
+\cls{stop}/\cls{palm} y \cls{like}/\cls{call} y en las etiquetas ruidosas de \cls{no\_gesture}.
+
+Esta interpretación delimita también el alcance del resultado. La cifra del 99\,\% estima el
+rendimiento del \emph{clasificador} sobre recortes de calidad HaGRID con cajas perfectas, no el
+del sistema completo con una webcam. En la demo, las cajas vendrán de MediaPipe y estarán peor
+centradas, la cámara y la iluminación serán otras y aparecerán posturas de transición entre
+gestos que HaGRID no contiene. Es esperable una caída de rendimiento por este cambio de dominio
+que nuestro experimento no cuantifica.
+
+\paragraph{Qué aporta cada componente.}
+La ablación muestra un resultado menos uniforme de lo que se suele esperar: de los tres
+componentes, solo la normalización por lotes tiene un efecto claro sobre la exactitud final. Su
+papel es sobre todo de \emph{optimización}: sin BN la red aprende mucho más despacio y no llega a
+converger en 50 épocas, en línea con la motivación original de BN como técnica para estabilizar y
+acelerar el entrenamiento \citep{ioffe2015bn}. El \emph{dropout} y el aumento de datos son, en
+cambio, técnicas de \emph{regularización}, y su efecto se ve en la dinámica del entrenamiento (más
+distancia entre entrenamiento y validación y parada más temprana sin ellas) más que en la
+exactitud final. Nuestra interpretación es que, en este problema, el modelo completo sobreajusta
+poco: tiene muchos ejemplos por clase, clases equilibradas y la parada anticipada ya lo protege.
+No es un argumento para eliminar el \emph{dropout} o el aumento de datos. Ambos deberían ganar
+importancia ante el cambio de dominio a la webcam (otras cámaras, iluminación y encuadres), que
+nuestro conjunto de test no representa; el aumento de datos se diseñó precisamente para simular
+esas variaciones.
+
+\paragraph{CNN propia frente a modelo preentrenado.}
+La comparación con ResNet18 matiza la idea de que un modelo más grande y preentrenado es siempre
+mejor. Con \NTrain{} imágenes de entrenamiento, una tarea bien acotada y entradas de
+$128\times128$, una red de \ParamsFinal{} parámetros entrenada desde cero queda a una distancia
+que no podemos distinguir del ruido estadístico. El preentrenamiento sí acelera mucho la
+convergencia, y podría marcar más diferencia con menos datos o en el cambio de dominio a la
+webcam, algo que no hemos medido. Por otra parte, el análisis de coste muestra que el número de
+parámetros es una mala medida del coste de inferencia: la red pequeña es la que más operaciones
+realiza, porque trabaja a mayor resolución en sus primeras capas.
+
+\paragraph{Limitaciones.}
+\begin{itemize}
+  \item \textbf{Cajas anotadas.} Todo el entrenamiento y la evaluación usan las cajas de HaGRID.
+    No hemos medido el rendimiento con las cajas de un detector ni con vídeo propio, que es el
+    escenario real de uso.
+  \item \textbf{Resolución.} Al trabajar con la versión de 384\,px, la mayoría de las manos se
+    amplían para llegar a $128\times128$ (mediana del lado de la caja: \LadoCajaMediana), lo que
+    elimina detalle fino como la posición exacta del meñique, relevante en \cls{like}/\cls{call}.
+  \item \textbf{Pocas repeticiones.} Dos semillas por variante bastan para ver la magnitud de la
+    variación entre ejecuciones, pero no para estimar con precisión diferencias de pocas décimas.
+    La ResNet18 se entrenó una sola vez.
+  \item \textbf{Sin búsqueda de hiperparámetros.} La configuración inicial se mantuvo porque ya
+    superaba el objetivo; es posible que otras tasas de aprendizaje o tamaños de lote mejoren
+    alguna variante, en particular la red sin BN.
+  \item \textbf{Ruido de etiqueta en la clase nula.} Algunos \cls{no\_gesture} son en realidad
+    gestos (\cref{sec:gradcam}), lo que penaliza al modelo por predicciones correctas y hace que
+    la exactitud medida sea una cota algo pesimista en esa clase.
+  \item \textbf{Una sola fuente de datos.} Las personas, los fondos y la forma de grabar son los
+    de HaGRID; no sabemos cómo se comporta el modelo con otras poblaciones o cámaras.
+\end{itemize}

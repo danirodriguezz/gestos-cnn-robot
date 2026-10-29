@@ -1,0 +1,30 @@
+\section*{Reparto del trabajo}
+\addcontentsline{toc}{section}{Reparto del trabajo}
+
+El trabajo se repartió por ficheros con contratos fijos entre ambos (\code{src/common.py}), de
+modo que cada autor pudiera avanzar con datos o modelos simulados sin esperar al otro.
+
+\begin{itemize}
+  \item \textbf{Daniel Rodríguez Alonso}: descarga y verificación de las anotaciones
+    (\code{download.py}, \code{show\_boxes.py}), recorte de manos (\code{prepare\_data.py}),
+    equilibrado y partición por persona (\code{make\_splits.py}), carga de datos y aumento
+    (\code{dataset.py}), evaluación y curvas (\code{evaluate.py}, \code{plot\_curves.py}),
+    Grad-CAM (\code{gradcam.py}), análisis estadístico y de coste (\code{analysis.py}) y ejecución
+    de los entrenamientos de la ablación y de la referencia.
+  \item \textbf{Carlos Falcón Brito}: propuesta inicial del proyecto, arquitectura GestureCNN y
+    ResNet18 (\code{model.py}), datos simulados para desarrollar sin el conjunto real
+    (\code{mock\_data.py}), bucle de entrenamiento con parada anticipada (\code{train.py}),
+    configuraciones de la ablación y lanzador de experimentos (\code{configs/},
+    \code{run\_experiments.py}) y demo con ROS\,2 (\cref{sec:demo}).
+\end{itemize}
+
+\paragraph{Uso de herramientas de IA.}
+Se utilizó un asistente de IA (Claude, de Anthropic) como apoyo en la programación, en la
+ejecución de los experimentos y en la redacción de este informe. Todas las cifras proceden de los
+ficheros de resultados del repositorio, generados por los \emph{scripts} descritos. La
+responsabilidad sobre el contenido corresponde a los autores.
+
+\paragraph{Código.}
+El código, las configuraciones, la partición y los resultados están en
+\url{https://github.com/danirodriguezz/gestos-cnn-robot}. Las cifras de este documento se generan
+automáticamente a partir de \code{results/} con \code{src/analysis.py}.
