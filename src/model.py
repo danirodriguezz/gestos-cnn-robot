@@ -1,4 +1,4 @@
-"""Modelo GestureCNN, build_model y guardado/carga de checkpoints (tarea C2).
+"""Modelos GestureCNN y ResNet18, build_model y guardado/carga de checkpoints (tareas C2 y C5).
 
 Uso: uv run python -m src.model     (imprime la forma de salida y el nº de parámetros)
 
@@ -7,15 +7,21 @@ Contrato (plan, sección 4.1):
     todo modelo devuelto tiene el atributo model.gradcam_layer (última conv)
     save_checkpoint(path, model, cfg)   # {"state_dict", "cfg", "classes"}
     load_checkpoint(path) -> (model, cfg)   # modelo ya en eval()
+
+Ampliación de C5 (sin romper el contrato): arch="resnet18" y el parámetro opcional
+pretrained=False, que solo afecta a resnet18 (pesos de ImageNet de torchvision).
 """
 from pathlib import Path
 
 import torch
 from torch import nn
+from torchvision.models import ResNet18_Weights, resnet18
 
 from src.common import CLASSES, IMG_SIZE
 
+ARCHS = ("gesturecnn", "resnet18")
 MODEL_KEYS = ("arch", "use_bn", "use_dropout")   # claves de cfg que definen la arquitectura
+# pretrained no está en MODEL_KEYS: load_checkpoint sobrescribe los pesos, así que no hace falta descargarlos
 
 
 def block(cin, cout, p_drop=0.0, use_bn=True):
@@ -47,10 +53,21 @@ class GestureCNN(nn.Module):
         return self.head(self.features(x))
 
 
-def build_model(arch="gesturecnn", use_bn=True, use_dropout=True, n_classes=len(CLASSES)):
+def build_resnet18(n_classes=len(CLASSES), pretrained=False):
+    """ResNet18 de torchvision con la capa fc cambiada a n_classes salidas (referencia de la sección 3.8)."""
+    model = resnet18(weights=ResNet18_Weights.DEFAULT if pretrained else None)
+    model.fc = nn.Linear(model.fc.in_features, n_classes)
+    model.gradcam_layer = model.layer4[-1].conv2     # última conv (contrato con gradcam.py)
+    return model
+
+
+def build_model(arch="gesturecnn", use_bn=True, use_dropout=True, n_classes=len(CLASSES), pretrained=False):
+    """use_bn y use_dropout solo se aplican a gesturecnn; pretrained, solo a resnet18."""
     if arch == "gesturecnn":
         return GestureCNN(n_classes, use_bn, use_dropout)
-    raise ValueError(f"arquitectura desconocida: {arch!r} (disponibles: 'gesturecnn')")
+    if arch == "resnet18":
+        return build_resnet18(n_classes, pretrained)
+    raise ValueError(f"arquitectura desconocida: {arch!r} (disponibles: {', '.join(ARCHS)})")
 
 
 def count_params(model):
@@ -75,7 +92,8 @@ def load_checkpoint(path):
 
 
 def main():
-    for name, kwargs in [("completo", {}), ("sin_bn", {"use_bn": False}), ("sin_dropout", {"use_dropout": False})]:
+    for name, kwargs in [("completo", {}), ("sin_bn", {"use_bn": False}), ("sin_dropout", {"use_dropout": False}),
+                         ("resnet18", {"arch": "resnet18"})]:
         model = build_model(**kwargs).eval()
         with torch.no_grad():
             out = model(torch.randn(2, 3, IMG_SIZE, IMG_SIZE))

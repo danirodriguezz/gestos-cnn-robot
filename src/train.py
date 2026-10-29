@@ -26,7 +26,8 @@ from src.model import MODEL_KEYS, build_model, save_checkpoint
 
 DEFAULTS = {
     "name": "debug",            # carpeta dentro de results/
-    "arch": "gesturecnn",       # arquitectura (build_model)
+    "arch": "gesturecnn",       # arquitectura (build_model): gesturecnn | resnet18
+    "pretrained": False,        # solo resnet18: parte de los pesos de ImageNet (necesita internet)
     "use_bn": True,
     "use_dropout": True,
     "augment": True,            # se pasa a get_dataloaders
@@ -124,7 +125,7 @@ def train(cfg, results_dir=RESULTS):
     set_seed(cfg["seed"])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     loaders = get_loaders(cfg)
-    model = build_model(**{k: cfg[k] for k in MODEL_KEYS}).to(device)
+    model = build_model(**{k: cfg[k] for k in MODEL_KEYS}, pretrained=cfg["pretrained"]).to(device)
 
     out = Path(results_dir) / cfg["name"]
     out.mkdir(parents=True, exist_ok=True)
