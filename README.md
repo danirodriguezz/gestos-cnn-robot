@@ -23,4 +23,40 @@ Requiere [uv](https://docs.astral.sh/uv/).
 
 ## Uso
 
-Pendiente: se completará con los comandos de preparación de datos, entrenamiento y evaluación.
+Todos los comandos se ejecutan desde la raíz del repositorio. Con GPU, la ablación tarda
+alrededor de una hora por semilla (~25 s por época en una GTX 1660 Ti).
+
+### 1. Datos
+
+    uv run python -m src.download        # HaGRID 30k a 384 px (Hugging Face) -> data/raw/
+    uv run python -m src.prepare_data    # recortes 128x128 de todas las manos -> data/crops/, data/crops.csv
+
+`data/splits.csv` (partición por persona) y `data/stats.json` (normalización) ya están en el
+repositorio: **no** hace falta ejecutar `src.make_splits`, que solo se usa para regenerarlos
+(`--force`). Los nombres de los recortes son deterministas, así que coinciden con `splits.csv`.
+
+### 2. Entrenamiento
+
+    uv run python -u -m src.run_experiments 2>&1 | tee results/ablacion.log                  # ablación, semilla 42
+    uv run python -u -m src.run_experiments --seed 43 2>&1 | tee results/ablacion_s43.log    # segunda semilla
+    uv run python -u -m src.run_experiments configs/resnet18.yaml 2>&1 | tee results/resnet18.log
+    cp -r results/completo results/final                                                     # modelo final
+
+Cada experimento escribe `best.pt`, `history.csv` y `config.yaml` en `results/<nombre>/`.
+Para una prueba rápida sin GPU: `--data mock --epochs 1`. Los pesos (`*.pt`) no se suben a git.
+
+### 3. Evaluación y figuras
+
+    uv run python -m src.evaluate --ckpt results/final/best.pt --split val
+    uv run python -m src.evaluate --ckpt results/final/best.pt --split test   # una sola vez
+    uv run python -m src.plot_curves results/completo results/sin_dropout results/sin_bn results/sin_aug results/resnet18
+    uv run python -m src.gradcam --ckpt results/final/best.pt
+    uv run python -m src.analysis        # IC, McNemar, semillas, coste -> informe/generado/resultados.tex
+
+### 4. Informe
+
+    cd informe && latexmk -pdf -jobname=informe main.tex  # -> informe/informe.pdf
+
+### Pruebas
+
+    uv run python -m pytest -q

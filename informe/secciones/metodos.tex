@@ -1,0 +1,174 @@
+\section{Métodos}
+\label{sec:metodos}
+
+\subsection{Preprocesado}
+
+Cada mano se recorta como un cuadrado centrado en su caja, con lado igual al lado mayor de la caja
+más un margen del 25\,\% por cada lado ($\text{lado} = \max(w, h)\cdot 1{,}5$). El recorte
+cuadrado evita deformar la mano al redimensionarla, y el margen conserva el contexto inmediato
+(muñeca, dedos que sobresalen de la caja) y deja espacio para el aumento de datos. Las zonas que
+caen fuera de la imagen se rellenan con negro. Los recortes se redimensionan a
+$128\times128$\,px, se guardan en JPEG de alta calidad y, al cargarlos, se normalizan por canal
+con las estadísticas de entrenamiento. La \cref{fig:recortes} muestra ejemplos de todas las clases.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/recortes_muestra.png}
+  \caption{Recortes de $128\times128$\,px de las nueve clases. Los ejemplos de
+    \cls{no\_gesture} (en rojo) son manos en reposo, sujetando objetos o parcialmente visibles. Se
+    aprecia la baja resolución de muchas manos, que se amplían al recortarlas.}
+  \label{fig:recortes}
+\end{figure}
+
+\subsection{Aumento de datos}
+
+Durante el entrenamiento, cada recorte pasa por cuatro transformaciones aleatorias
+\citep{shorten2019augmentation}, elegidas para no alterar el significado del gesto
+(\cref{fig:aug}):
+\begin{itemize}
+  \item \textbf{Rotación} uniforme de hasta $\pm15^\circ$: la mano nunca está perfectamente
+    vertical. No se rota más porque una rotación grande podría convertir \cls{like} en algo
+    parecido a \cls{dislike} o a un pulgar horizontal.
+  \item \textbf{Recorte aleatorio con reescalado} (\code{RandomResizedCrop}) que conserva entre
+    el 80\,\% y el 100\,\% del área y la relación de aspecto 1:1. Simula pequeños errores de
+    centrado del detector; como el margen es del 25\,\%, la mano no llega a cortarse.
+  \item \textbf{Volteo horizontal} con probabilidad 0,5, que intercambia mano derecha e izquierda
+    sin cambiar el gesto. El volteo \emph{vertical} se excluye porque convierte \cls{like} en
+    \cls{dislike}.
+  \item \textbf{Variación de color}: brillo y contraste $\pm30\,\%$, saturación $\pm20\,\%$. No se
+    altera el tono para no generar colores de piel irreales.
+\end{itemize}
+Validación y test solo se normalizan, sin transformaciones aleatorias.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.62\linewidth]{figures/augmentation_muestra.png}
+  \caption{Aumento de datos: un recorte original por fila y cuatro versiones aumentadas. Las
+    esquinas negras proceden de la rotación, igual que el relleno del recorte.}
+  \label{fig:aug}
+\end{figure}
+
+\subsection{Arquitectura: GestureCNN}
+
+GestureCNN (\cref{fig:arquitectura}) encadena cinco bloques convolucionales. Cada bloque aplica
+dos veces la secuencia convolución $3\times3$ (con \emph{padding} 1) $\rightarrow$ BN
+$\rightarrow$ ReLU, y termina con un \emph{max pooling} $2\times2$ que divide la resolución por
+dos. Los canales crecen como 32, 64, 128, 256 y 256, de modo que la entrada de
+$128\times128$ se reduce a mapas de $4\times4$. En los tres bloques más profundos se añade
+\code{Dropout2d} con probabilidades 0,1, 0,2 y 0,3: apaga mapas de características completos,
+lo que regulariza mejor que apagar píxeles sueltos, cuyos vecinos están muy correlacionados
+\citep{tompson2015spatialdropout}. La cabeza aplica \emph{global average pooling}
+\citep{lin2014nin}, un \emph{dropout} de 0,5 y una capa lineal de 256 a 9 salidas. El total es de
+\ParamsFinal{} parámetros, el 88\,\% de ellos en los dos últimos bloques, donde las
+convoluciones de $256\times256$ canales son las más caras. Gracias al \emph{global average
+pooling}, la cabeza solo tiene 2\,313 parámetros; una capa lineal sobre los $256\times4\times4$
+valores aplanados tendría 36\,873, dieciséis veces más, y una capa oculta intermedia los
+multiplicaría de nuevo.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\footnotesize,
+      blk/.style={draw, rounded corners=2pt, minimum height=1.25cm, minimum width=1.45cm,
+                  align=center, fill=#1},
+      arr/.style={-{Stealth[length=2mm]}, thick}]
+    \node[blk=gray!10]   (in) {Entrada\\$3\times128^2$};
+    \node[blk=blue!10,   right=0.35cm of in]  (b1) {Bloque 1\\32 c.\\$\to 64^2$};
+    \node[blk=blue!10,   right=0.35cm of b1]  (b2) {Bloque 2\\64 c.\\$\to 32^2$};
+    \node[blk=blue!18,   right=0.35cm of b2]  (b3) {Bloque 3\\128 c.\\$\to 16^2$\\{\scriptsize drop 0,1}};
+    \node[blk=blue!26,   right=0.35cm of b3]  (b4) {Bloque 4\\256 c.\\$\to 8^2$\\{\scriptsize drop 0,2}};
+    \node[blk=blue!34,   right=0.35cm of b4]  (b5) {Bloque 5\\256 c.\\$\to 4^2$\\{\scriptsize drop 0,3}};
+    \node[blk=orange!15, right=0.35cm of b5]  (gap) {GAP\\256};
+    \node[blk=orange!15, right=0.35cm of gap] (fc) {Dropout 0,5\\Lineal\\$256\to9$};
+    \foreach \a/\b in {in/b1,b1/b2,b2/b3,b3/b4,b4/b5,b5/gap,gap/fc} \draw[arr] (\a) -- (\b);
+    \node[below=0.45cm of b3, draw, dashed, rounded corners=2pt, align=left, inner sep=4pt,
+          font=\scriptsize] (det)
+      {Cada bloque: $[\text{Conv }3{\times}3 \to \text{BN} \to \text{ReLU}]\times2 \to
+       \text{MaxPool }2{\times}2\ (\to \text{Dropout2d})$};
+    \draw[dashed, gray] (det.north) -- (b3.south);
+    \node[above=0.12cm of b5, font=\scriptsize, text=red!70!black, align=center]
+      {Grad-CAM: 2.ª conv. ($256\times8^2$)};
+  \end{tikzpicture}
+  \caption{Arquitectura de GestureCNN (\ParamsFinal{} parámetros). Bajo cada bloque se indica el
+    número de canales, la resolución de salida y la probabilidad de \code{Dropout2d}. Grad-CAM se
+    calcula sobre la segunda convolución del último bloque, antes del \emph{pooling}.}
+  \label{fig:arquitectura}
+\end{figure}
+
+Las variantes de la ablación se obtienen con dos interruptores de la misma clase: \emph{sin BN}
+sustituye cada capa BN por la identidad (las convoluciones conservan su sesgo) y \emph{sin
+dropout} pone a cero todas las probabilidades de \code{Dropout2d} y \code{Dropout}. Así las
+variantes comparten exactamente el resto de la arquitectura.
+
+\subsection{Entrenamiento}
+
+Todos los modelos se entrenan con entropía cruzada (sin pesos de clase, porque las clases están
+equilibradas) y Adam \citep{kingma2015adam} con tasa de aprendizaje inicial $10^{-3}$,
+\emph{weight decay} $10^{-4}$ y lotes de 64 imágenes (el último lote incompleto de cada época se
+descarta para no tener lotes de una imagen en BN). La tasa de aprendizaje se divide por dos
+cuando la pérdida de validación no mejora en 3 épocas (\code{ReduceLROnPlateau}). La parada
+anticipada \citep{prechelt1998early} detiene el entrenamiento tras 6 épocas sin mejorar la pérdida
+de validación, con un máximo de 50 épocas, y restaura los pesos de la mejor época, que son los que
+se guardan en el \emph{checkpoint}. Cada experimento fija la semilla (42 por defecto) de Python,
+NumPy y PyTorch; como algunas operaciones de cuDNN no son deterministas, dos ejecuciones con la
+misma semilla pueden diferir ligeramente. Todos los entrenamientos se hicieron con PyTorch
+\VersionTorch{} en una GPU \GPU{} de portátil.
+
+\paragraph{Referencia: ResNet18.}
+Cargamos ResNet18 con los pesos de ImageNet de \code{torchvision}, sustituimos la capa final por
+una lineal de 512 a 9 salidas y reajustamos \emph{toda} la red con los mismos datos, el mismo
+aumento y el mismo protocolo, salvo la tasa de aprendizaje inicial, diez veces menor ($10^{-4}$)
+para no destruir los rasgos preentrenados. La entrada es la misma de $128\times128$, normalizada
+con nuestras estadísticas y no con las de ImageNet; al reajustar todas las capas, la red se adapta
+a esa diferencia de escala.
+
+\subsection{Protocolo de evaluación}
+\label{sec:protocolo}
+
+\paragraph{Selección del modelo.}
+Todas las decisiones se tomaron con validación. El modelo final es la variante \emph{completa}
+(BN, \emph{dropout} y aumento de datos) entrenada con la semilla 42: en la primera ablación, la
+única disponible cuando se tomó la decisión, obtuvo la menor pérdida de validación y la mayor
+exactitud y F1 macro de validación (columna s42 de la \cref{tab:semillas}). No se hizo una
+búsqueda de hiperparámetros, porque la configuración inicial ya superaba ampliamente el objetivo.
+Solo después de fijar el modelo final se evaluó el conjunto de test, una vez por modelo. La
+segunda semilla se entrenó después; aunque en ella la variante sin \emph{dropout} queda
+ligeramente por delante en validación, no cambiamos el modelo final: la diferencia es del orden
+de la variación entre ejecuciones (\cref{sec:ablacion}), y cambiar de modelo después de haber
+mirado el test invalidaría su papel de estimación independiente.
+
+\paragraph{Métricas.}
+Reportamos la exactitud, la F1 macro (media sin ponderar de las F1 por clase) y la precisión,
+\emph{recall} y F1 de cada clase, además de la matriz de confusión normalizada por filas, cuya
+diagonal es el \emph{recall}.
+
+\paragraph{Incertidumbre.}
+Las imágenes de una misma persona no son independientes: comparten mano, fondo e iluminación. Un
+intervalo de confianza calculado remuestreando imágenes sería, por tanto, demasiado estrecho. Por
+eso calculamos intervalos del 95\,\% por \emph{bootstrap} de percentiles remuestreando
+\emph{personas} con reemplazo (\NBoot{} réplicas) \citep{efron1993bootstrap}.
+
+\paragraph{Comparación entre modelos.}
+Para decidir si dos modelos evaluados sobre las mismas imágenes de test difieren, usamos la
+prueba exacta de McNemar \citep{mcnemar1947,dietterich1998tests}. La prueba solo tiene en cuenta
+las imágenes en las que \emph{un único} modelo acierta: si la diferencia fuera ruido, esos
+desacuerdos se repartirían al 50\,\% entre los dos modelos. Repetimos la ablación con una segunda
+semilla (43) para estimar cuánto varía el resultado entre ejecuciones idénticas. La segunda
+semilla figuraba en el plan de trabajo como opcional y se ejecutó después de ver los resultados de
+validación de la primera ablación; las pruebas de McNemar se añadieron entonces. Ambos son, por
+tanto, análisis \emph{exploratorios}, y las pruebas no se corrigen por comparaciones múltiples.
+
+\paragraph{Explicabilidad.}
+Calculamos Grad-CAM \citep{selvaraju2017gradcam} sobre la última capa convolucional: el mapa de
+la clase $c$ es $\mathrm{ReLU}\big(\sum_k \alpha_k^c A^k\big)$, donde $A^k$ son los mapas de
+activación de la capa y $\alpha_k^c$ es la media espacial del gradiente del \emph{logit} de $c$
+respecto a $A^k$. Usamos el \emph{logit} y no la probabilidad porque la \emph{softmax} se satura
+con confianzas altas y anula los gradientes. En GestureCNN la capa tiene una resolución de
+$8\times8$; en ResNet18, de $4\times4$. Los mapas se calculan siempre sobre validación.
+
+\paragraph{Coste.}
+Medimos el número de parámetros, las multiplicaciones-acumulaciones (MACs) por imagen de las capas
+convolucionales y lineales, el tiempo por época de entrenamiento y la latencia de inferencia con
+un lote de una imagen, que es el caso de la demo (un recorte por fotograma). La latencia es la
+mediana y el percentil 95 de 200 pasadas, tras 20 de calentamiento, en la CPU (\CPU, \CPUHilos{}
+hilos) y en la GPU.

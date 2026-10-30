@@ -1,0 +1,18 @@
+{
+  "accuracy": 0.9751578947368421,
+  "f1_macro": 0.9750979698216441,
+  "f1_por_clase": {
+    "stop": 0.9886,
+    "like": 0.9667,
+    "dislike": 0.9907,
+    "one": 0.9778,
+    "peace": 0.9663,
+    "fist": 0.9923,
+    "palm": 0.985,
+    "call": 0.9575,
+    "no_gesture": 0.9511
+  },
+  "n": 2375,
+  "split": "val",
+  "ckpt": "results/sin_bn/best.pt"
+}

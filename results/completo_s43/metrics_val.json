@@ -1,0 +1,18 @@
+{
+  "accuracy": 0.9882105263157894,
+  "f1_macro": 0.9882201235406293,
+  "f1_por_clase": {
+    "stop": 0.9943,
+    "like": 0.9882,
+    "dislike": 0.9944,
+    "one": 0.9851,
+    "peace": 0.9791,
+    "fist": 0.9981,
+    "palm": 0.9888,
+    "call": 0.987,
+    "no_gesture": 0.979
+  },
+  "n": 2375,
+  "split": "val",
+  "ckpt": "results/completo_s43/best.pt"
+}

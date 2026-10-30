@@ -1,0 +1,25 @@
+\begin{abstract}
+\noindent
+Este trabajo estudia si una red convolucional pequeña, entrenada desde cero, puede reconocer con
+fiabilidad un vocabulario de gestos de la mano pensado para dar órdenes a un robot.
+Partimos de un subconjunto de HaGRID con ocho gestos (\cls{stop}, \cls{like}, \cls{dislike},
+\cls{one}, \cls{peace}, \cls{fist}, \cls{palm} y \cls{call}) y una clase nula
+(\cls{no\_gesture}) que deja el robot quieto. Clasificamos recortes de la mano de
+$128\times128$\,px y dividimos los datos \emph{por persona}, de modo que las \PersonasTest{}
+personas de test no aparecen en entrenamiento ni en validación.
+La red propuesta, GestureCNN, tiene cinco bloques convolucionales con normalización por lotes,
+\emph{dropout} y \emph{global average pooling} (\ParamsFinal{} parámetros). En test alcanza una
+exactitud del \AccTestFinal{} (IC del 95\,\% por \emph{bootstrap} por persona: \AccTestFinalIC)
+y una F1 macro del \FoneTestFinal, muy por encima del objetivo del 85\,\%.
+Un estudio de ablación con dos semillas indica que la normalización por lotes es el componente
+decisivo, mientras que el \emph{dropout} y el aumento de datos tienen efectos pequeños sobre la
+exactitud con este conjunto de datos. Un ResNet18 preentrenado en ImageNet sirve de referencia
+(\AccTestResnet{} en test) con \RatioParams{} veces más parámetros. Los mapas Grad-CAM muestran que la red
+atiende a los dedos que distinguen cada gesto, y los errores restantes se concentran en pares
+visualmente próximos (\cls{stop}/\cls{palm}, \cls{like}/\cls{call}) y en ejemplos con ruido de
+etiqueta. Por último, se describe el diseño de una demo en tiempo real con ROS\,2 y
+\emph{turtlesim}.
+
+\medskip\noindent\textbf{Palabras clave:} reconocimiento de gestos, redes convolucionales,
+interacción persona-robot, HaGRID, ablación, Grad-CAM.
+\end{abstract}

@@ -1,0 +1,290 @@
+% Generado por src/analysis.py a partir de results/: no editar a mano.
+
+\newcommand{\NTrain}{11.088}
+\newcommand{\PersonasTrain}{3.416}
+\newcommand{\NVal}{2.375}
+\newcommand{\PersonasVal}{735}
+\newcommand{\NTest}{2.374}
+\newcommand{\PersonasTest}{726}
+\newcommand{\NTotal}{15.837}
+\newcommand{\PersonasTotal}{4.877}
+\newcommand{\PersonasCompartidas}{0}
+\newcommand{\NImagenesOrig}{14.078}
+\newcommand{\NManos}{17.296}
+\newcommand{\NPersonasOrig}{4.877}
+\newcommand{\NoGestureOrig}{3.219}
+\newcommand{\NoGestureKept}{1.760}
+\newcommand{\LadoCajaMediana}{68\,px}
+\newcommand{\LadoCajaPdiez}{36\,px}
+\newcommand{\AccValFinal}{98{,}99\,\%}
+\newcommand{\FoneValFinal}{98{,}99\,\%}
+\newcommand{\ErroresValFinal}{24}
+\newcommand{\AccTestFinal}{98{,}99\,\%}
+\newcommand{\FoneTestFinal}{98{,}99\,\%}
+\newcommand{\ErroresTestFinal}{24}
+\newcommand{\EpocasFinal}{44}
+\newcommand{\MejorepocaFinal}{38}
+\newcommand{\ReduccioneslrFinal}{22, 32 y 43}
+\newcommand{\NreduccioneslrFinal}{3}
+\newcommand{\AccepocaunoFinal}{25{,}7\,\%}
+\newcommand{\EpocanoventaycincoFinal}{7}
+\newcommand{\BrechaFinal}{0{,}5}
+\newcommand{\AccValCompleto}{98{,}99\,\%}
+\newcommand{\FoneValCompleto}{98{,}99\,\%}
+\newcommand{\ErroresValCompleto}{24}
+\newcommand{\AccTestCompleto}{98{,}99\,\%}
+\newcommand{\FoneTestCompleto}{98{,}99\,\%}
+\newcommand{\ErroresTestCompleto}{24}
+\newcommand{\EpocasCompleto}{44}
+\newcommand{\MejorepocaCompleto}{38}
+\newcommand{\ReduccioneslrCompleto}{22, 32 y 43}
+\newcommand{\NreduccioneslrCompleto}{3}
+\newcommand{\AccepocaunoCompleto}{25{,}7\,\%}
+\newcommand{\EpocanoventaycincoCompleto}{7}
+\newcommand{\BrechaCompleto}{0{,}5}
+\newcommand{\AccValCompletoS}{98{,}82\,\%}
+\newcommand{\FoneValCompletoS}{98{,}82\,\%}
+\newcommand{\ErroresValCompletoS}{28}
+\newcommand{\AccTestCompletoS}{99{,}03\,\%}
+\newcommand{\FoneTestCompletoS}{99{,}03\,\%}
+\newcommand{\ErroresTestCompletoS}{23}
+\newcommand{\EpocasCompletoS}{34}
+\newcommand{\MejorepocaCompletoS}{28}
+\newcommand{\ReduccioneslrCompletoS}{15 y 33}
+\newcommand{\NreduccioneslrCompletoS}{2}
+\newcommand{\AccepocaunoCompletoS}{25{,}3\,\%}
+\newcommand{\EpocanoventaycincoCompletoS}{9}
+\newcommand{\BrechaCompletoS}{0{,}3}
+\newcommand{\AccValSinDropout}{98{,}95\,\%}
+\newcommand{\FoneValSinDropout}{98{,}95\,\%}
+\newcommand{\ErroresValSinDropout}{25}
+\newcommand{\AccTestSinDropout}{98{,}82\,\%}
+\newcommand{\FoneTestSinDropout}{98{,}82\,\%}
+\newcommand{\ErroresTestSinDropout}{28}
+\newcommand{\EpocasSinDropout}{29}
+\newcommand{\MejorepocaSinDropout}{23}
+\newcommand{\ReduccioneslrSinDropout}{13, 21 y 28}
+\newcommand{\NreduccioneslrSinDropout}{3}
+\newcommand{\AccepocaunoSinDropout}{51{,}2\,\%}
+\newcommand{\EpocanoventaycincoSinDropout}{6}
+\newcommand{\BrechaSinDropout}{1{,}1}
+\newcommand{\AccValSinDropoutS}{99{,}12\,\%}
+\newcommand{\FoneValSinDropoutS}{99{,}12\,\%}
+\newcommand{\ErroresValSinDropoutS}{21}
+\newcommand{\AccTestSinDropoutS}{99{,}12\,\%}
+\newcommand{\FoneTestSinDropoutS}{99{,}11\,\%}
+\newcommand{\ErroresTestSinDropoutS}{21}
+\newcommand{\EpocasSinDropoutS}{50}
+\newcommand{\MejorepocaSinDropoutS}{44}
+\newcommand{\ReduccioneslrSinDropoutS}{22, 27, 35, 40 y 49}
+\newcommand{\NreduccioneslrSinDropoutS}{5}
+\newcommand{\AccepocaunoSinDropoutS}{56{,}2\,\%}
+\newcommand{\EpocanoventaycincoSinDropoutS}{5}
+\newcommand{\BrechaSinDropoutS}{0{,}9}
+\newcommand{\AccValSinBn}{97{,}52\,\%}
+\newcommand{\FoneValSinBn}{97{,}51\,\%}
+\newcommand{\ErroresValSinBn}{59}
+\newcommand{\AccTestSinBn}{97{,}68\,\%}
+\newcommand{\FoneTestSinBn}{97{,}68\,\%}
+\newcommand{\ErroresTestSinBn}{55}
+\newcommand{\EpocasSinBn}{50}
+\newcommand{\MejorepocaSinBn}{47}
+\newcommand{\ReduccioneslrSinBn}{39}
+\newcommand{\NreduccioneslrSinBn}{1}
+\newcommand{\AccepocaunoSinBn}{16{,}8\,\%}
+\newcommand{\EpocanoventaycincoSinBn}{25}
+\newcommand{\BrechaSinBn}{-1{,}2}
+\newcommand{\AccValSinBnS}{97{,}60\,\%}
+\newcommand{\FoneValSinBnS}{97{,}60\,\%}
+\newcommand{\ErroresValSinBnS}{57}
+\newcommand{\AccTestSinBnS}{97{,}94\,\%}
+\newcommand{\FoneTestSinBnS}{97{,}93\,\%}
+\newcommand{\ErroresTestSinBnS}{49}
+\newcommand{\EpocasSinBnS}{50}
+\newcommand{\MejorepocaSinBnS}{49}
+\newcommand{\ReduccioneslrSinBnS}{40}
+\newcommand{\NreduccioneslrSinBnS}{1}
+\newcommand{\AccepocaunoSinBnS}{14{,}6\,\%}
+\newcommand{\EpocanoventaycincoSinBnS}{23}
+\newcommand{\BrechaSinBnS}{-1{,}5}
+\newcommand{\AccValSinAug}{98{,}65\,\%}
+\newcommand{\FoneValSinAug}{98{,}65\,\%}
+\newcommand{\ErroresValSinAug}{32}
+\newcommand{\AccTestSinAug}{98{,}86\,\%}
+\newcommand{\FoneTestSinAug}{98{,}86\,\%}
+\newcommand{\ErroresTestSinAug}{27}
+\newcommand{\EpocasSinAug}{23}
+\newcommand{\MejorepocaSinAug}{17}
+\newcommand{\ReduccioneslrSinAug}{15 y 22}
+\newcommand{\NreduccioneslrSinAug}{2}
+\newcommand{\AccepocaunoSinAug}{50{,}4\,\%}
+\newcommand{\EpocanoventaycincoSinAug}{6}
+\newcommand{\BrechaSinAug}{1{,}3}
+\newcommand{\AccValSinAugS}{98{,}82\,\%}
+\newcommand{\FoneValSinAugS}{98{,}82\,\%}
+\newcommand{\ErroresValSinAugS}{28}
+\newcommand{\AccTestSinAugS}{98{,}44\,\%}
+\newcommand{\FoneTestSinAugS}{98{,}44\,\%}
+\newcommand{\ErroresTestSinAugS}{37}
+\newcommand{\EpocasSinAugS}{24}
+\newcommand{\MejorepocaSinAugS}{18}
+\newcommand{\ReduccioneslrSinAugS}{18 y 23}
+\newcommand{\NreduccioneslrSinAugS}{2}
+\newcommand{\AccepocaunoSinAugS}{50{,}5\,\%}
+\newcommand{\EpocanoventaycincoSinAugS}{7}
+\newcommand{\BrechaSinAugS}{1{,}3}
+\newcommand{\AccValResnet}{99{,}41\,\%}
+\newcommand{\FoneValResnet}{99{,}41\,\%}
+\newcommand{\ErroresValResnet}{14}
+\newcommand{\AccTestResnet}{99{,}20\,\%}
+\newcommand{\FoneTestResnet}{99{,}20\,\%}
+\newcommand{\ErroresTestResnet}{19}
+\newcommand{\EpocasResnet}{23}
+\newcommand{\MejorepocaResnet}{17}
+\newcommand{\ReduccioneslrResnet}{10 y 22}
+\newcommand{\NreduccioneslrResnet}{2}
+\newcommand{\AccepocaunoResnet}{97{,}6\,\%}
+\newcommand{\EpocanoventaycincoResnet}{1}
+\newcommand{\BrechaResnet}{0{,}7}
+\newcommand{\AccTestFinalIC}{[98{,}53\,\%;\ 99{,}40\,\%]}
+\newcommand{\FoneTestFinalIC}{[98{,}53\,\%;\ 99{,}41\,\%]}
+\newcommand{\NBoot}{2.000}
+\newcommand{\AccTestResnetIC}{[98{,}76\,\%;\ 99{,}57\,\%]}
+\newcommand{\FoneTestResnetIC}{[98{,}76\,\%;\ 99{,}58\,\%]}
+\newcommand{\ConfusionesTestFinal}{\textit{like}$\to$\textit{call} (5), \textit{palm}$\to$\textit{stop} (4), \textit{stop}$\to$\textit{palm} (4), \textit{no\_gesture}$\to$\textit{like} (2)}
+\newcommand{\PeorClaseTest}{\textit{palm}}
+\newcommand{\PeorFoneTest}{98{,}1\,\%}
+\newcommand{\FalsasActivaciones}{5}
+\newcommand{\NNoGestureTest}{264}
+\newcommand{\TasaFalsasActivaciones}{1{,}9\,\%}
+\newcommand{\Omisiones}{1}
+\newcommand{\ErroresEnPares}{13}
+\newcommand{\AccValMediaCompleto}{98{,}91\,\%}
+\newcommand{\AccTestMediaCompleto}{99{,}01\,\%}
+\newcommand{\FoneValMediaCompleto}{98{,}91\,\%}
+\newcommand{\FoneTestMediaCompleto}{99{,}01\,\%}
+\newcommand{\AccValMediaSinDropout}{99{,}03\,\%}
+\newcommand{\AccTestMediaSinDropout}{98{,}97\,\%}
+\newcommand{\FoneValMediaSinDropout}{99{,}03\,\%}
+\newcommand{\FoneTestMediaSinDropout}{98{,}97\,\%}
+\newcommand{\AccValMediaSinBn}{97{,}56\,\%}
+\newcommand{\AccTestMediaSinBn}{97{,}81\,\%}
+\newcommand{\FoneValMediaSinBn}{97{,}55\,\%}
+\newcommand{\FoneTestMediaSinBn}{97{,}80\,\%}
+\newcommand{\AccValMediaSinAug}{98{,}74\,\%}
+\newcommand{\AccTestMediaSinAug}{98{,}65\,\%}
+\newcommand{\FoneValMediaSinAug}{98{,}74\,\%}
+\newcommand{\FoneTestMediaSinAug}{98{,}65\,\%}
+\newcommand{\PmcnemarSinDropout}{$p = 0{,}541$}
+\newcommand{\SolocompletoSinDropout}{14}
+\newcommand{\SolovarianteSinDropout}{10}
+\newcommand{\PmcnemarSinBn}{$p < 0{,}001$}
+\newcommand{\SolocompletoSinBn}{42}
+\newcommand{\SolovarianteSinBn}{11}
+\newcommand{\PmcnemarSinAug}{$p = 0{,}701$}
+\newcommand{\SolocompletoSinAug}{15}
+\newcommand{\SolovarianteSinAug}{12}
+\newcommand{\PmcnemarResnet}{$p = 0{,}424$}
+\newcommand{\SolocompletoResnet}{10}
+\newcommand{\SolovarianteResnet}{15}
+\newcommand{\VersionTorch}{2.14.1}
+\newcommand{\GPU}{GTX 1660 Ti}
+\newcommand{\CPU}{Intel Core i7-9750H @ 2.60GHz}
+\newcommand{\CPUHilos}{6}
+\newcommand{\ParamsFinal}{2{,}36\,M}
+\newcommand{\MacsFinal}{920\,M}
+\newcommand{\LatCpuFinal}{8{,}68\,ms}
+\newcommand{\LatCudaFinal}{1{,}03\,ms}
+\newcommand{\SepocaFinal}{25{,}5\,s}
+\newcommand{\ParamsResnet}{11{,}18\,M}
+\newcommand{\MacsResnet}{592\,M}
+\newcommand{\LatCpuResnet}{10{,}23\,ms}
+\newcommand{\LatCudaResnet}{2{,}07\,ms}
+\newcommand{\SepocaResnet}{12{,}1\,s}
+\newcommand{\FracMacsPrimerosBloques}{43\,\%}
+\newcommand{\FracParamsPrimerosBloques}{3\,\%}
+\newcommand{\RatioParams}{4{,}7}
+\newcommand{\RatioMacs}{1{,}6}
+\newcommand{\RatioSEpoca}{2{,}1}
+
+\newcommand{\TablaDatos}{%
+\begin{tabular}{llrrrr}
+\toprule
+Clase & Orden & Train & Val & Test & Total \\
+\midrule
+\textit{stop} & Parar & 1225 & 261 & 262 & 1748 \\
+\textit{like} & Avanzar & 1214 & 258 & 260 & 1732 \\
+\textit{dislike} & Retroceder & 1248 & 268 & 267 & 1783 \\
+\textit{one} & Girar a la izquierda & 1245 & 267 & 266 & 1778 \\
+\textit{peace} & Girar a la derecha & 1237 & 266 & 266 & 1769 \\
+\textit{fist} & Cerrar pinza & 1214 & 259 & 261 & 1734 \\
+\textit{palm} & Abrir pinza & 1239 & 267 & 264 & 1770 \\
+\textit{call} & Volver al inicio & 1234 & 265 & 264 & 1763 \\
+\textit{no\_gesture} & Ninguna (quieto) & 1232 & 264 & 264 & 1760 \\
+\midrule
+Total imágenes & & 11088 & 2375 & 2374 & 15837 \\
+Personas & & 3416 & 735 & 726 & 4877 \\
+\bottomrule
+\end{tabular}}
+
+\newcommand{\TablaAblacion}{%
+\begin{tabular}{lccc cc cc c}
+\toprule
+& & & & \multicolumn{2}{c}{Validación} & \multicolumn{2}{c}{Test} & \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Variante & Dropout & BN & Augm. & Acc. & F1 macro & Acc. & F1 macro & Épocas \\
+\midrule
+Completo & sí & sí & sí & 98{,}91\,\% & 98{,}91\,\% & 99{,}01\,\% & 99{,}01\,\% & 44 / 34 \\
+Sin dropout & no & sí & sí & 99{,}03\,\% & 99{,}03\,\% & 98{,}97\,\% & 98{,}97\,\% & 29 / 50 \\
+Sin BN & sí & no & sí & 97{,}56\,\% & 97{,}55\,\% & 97{,}81\,\% & 97{,}80\,\% & 50 / 50 \\
+Sin augmentation & sí & sí & no & 98{,}74\,\% & 98{,}74\,\% & 98{,}65\,\% & 98{,}65\,\% & 23 / 24 \\
+\midrule
+ResNet18 preentrenado$^\dagger$ & — & sí & sí & 99{,}41\,\% & 99{,}41\,\% & 99{,}20\,\% & 99{,}20\,\% & 23 \\
+\bottomrule
+\end{tabular}}
+
+\newcommand{\TablaSemillas}{%
+\begin{tabular}{l rr rr rrr}
+\toprule
+& \multicolumn{2}{c}{Acc. val} & \multicolumn{2}{c}{Errores test} & \multicolumn{3}{c}{McNemar vs.\ completo (semilla 42)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-8}
+Variante & s42 & s43 & s42 & s43 & solo compl. & solo var. & $p$ \\
+\midrule
+Completo & 98{,}99\,\% & 98{,}82\,\% & 24 & 23 & — & — & — \\
+Sin dropout & 98{,}95\,\% & 99{,}12\,\% & 28 & 21 & 14 & 10 & 0{,}541 \\
+Sin BN & 97{,}52\,\% & 97{,}60\,\% & 55 & 49 & 42 & 11 & $<\!0{,}001$ \\
+Sin augmentation & 98{,}65\,\% & 98{,}82\,\% & 27 & 37 & 15 & 12 & 0{,}701 \\
+\midrule
+ResNet18 preentrenado & 99{,}41\,\% & — & 19 & — & 10 & 15 & 0{,}424 \\
+\bottomrule
+\end{tabular}}
+
+\newcommand{\TablaPorClase}{%
+\begin{tabular}{llrrrr}
+\toprule
+Clase & Orden & Precisión & Recall & F1 & $n$ \\
+\midrule
+\textit{stop} & Parar & 98{,}5\,\% & 98{,}5\,\% & 98{,}5\,\% & 262 \\
+\textit{like} & Avanzar & 99{,}2\,\% & 97{,}3\,\% & 98{,}3\,\% & 260 \\
+\textit{dislike} & Retroceder & 100{,}0\,\% & 100{,}0\,\% & 100{,}0\,\% & 267 \\
+\textit{one} & Girar a la izquierda & 99{,}3\,\% & 99{,}6\,\% & 99{,}4\,\% & 266 \\
+\textit{peace} & Girar a la derecha & 98{,}9\,\% & 99{,}2\,\% & 99{,}1\,\% & 266 \\
+\textit{fist} & Cerrar pinza & 100{,}0\,\% & 99{,}6\,\% & 99{,}8\,\% & 261 \\
+\textit{palm} & Abrir pinza & 97{,}7\,\% & 98{,}5\,\% & 98{,}1\,\% & 264 \\
+\textit{call} & Volver al inicio & 97{,}8\,\% & 100{,}0\,\% & 98{,}9\,\% & 264 \\
+\textit{no\_gesture} & Ninguna (quieto) & 99{,}6\,\% & 98{,}1\,\% & 98{,}9\,\% & 264 \\
+\bottomrule
+\end{tabular}}
+
+\newcommand{\TablaCoste}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+& & & & \multicolumn{2}{c}{CPU (ms)} & \multicolumn{2}{c}{GPU (ms)} \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Modelo & Parámetros & MACs & s/época & mediana & p95 & mediana & p95 \\
+\midrule
+GestureCNN & 2{,}36\,M & 920\,M & 25{,}5 & 8{,}68 & 9{,}62 & 1{,}03 & 1{,}07 \\
+ResNet18 & 11{,}18\,M & 592\,M & 12{,}1 & 10{,}23 & 10{,}62 & 2{,}07 & 2{,}29 \\
+\bottomrule
+\end{tabular}}
+

@@ -4,6 +4,7 @@ Uso:
     uv run python -m src.run_experiments                            (las 4 configs de la ablación)
     uv run python -m src.run_experiments configs/resnet18.yaml      (cualquier lista de configs)
     uv run python -m src.run_experiments --data mock --epochs 1     (prueba rápida sin GPU)
+    uv run python -m src.run_experiments --seed 43                  (repetición: results/<name>_s43/)
 
 Cada experimento escribe en results/<name>/ igual que train.py, con la misma semilla y la misma
 partición, así que son comparables (plan, sección 3.8). Al final imprime un resumen con las
@@ -27,9 +28,15 @@ def summarize(cfg, history):
 
 
 def run(paths, results_dir=RESULTS, **overrides):
-    """Entrena cada config de paths, en orden. Devuelve una fila de resumen por experimento."""
+    """Entrena cada config de paths, en orden. Devuelve una fila de resumen por experimento.
+
+    Con seed en overrides, el nombre lleva el sufijo _s<seed> para no pisar la repetición con SEED.
+    """
     # se cargan todas antes de empezar: una errata en la última no debe descubrirse tras horas de GPU
     cfgs = [load_config(path, **overrides) for path in paths]
+    if overrides.get("seed") is not None:
+        for cfg in cfgs:
+            cfg["name"] = f"{cfg['name']}_s{cfg['seed']}"
     names = [cfg["name"] for cfg in cfgs]
     if len(set(names)) != len(names):
         raise ValueError(f"dos configs escriben en la misma carpeta de results/: {names}")
@@ -42,9 +49,10 @@ def main():
                         help="yaml de los experimentos (por defecto, los 4 de la ablación)")
     parser.add_argument("--data", choices=["real", "mock"], help="sobrescribe data en todas las configs")
     parser.add_argument("--epochs", type=int, help="sobrescribe epochs en todas las configs")
+    parser.add_argument("--seed", type=int, help="otra semilla; escribe en results/<name>_s<seed>/")
     args = parser.parse_args()
 
-    rows = run(args.configs, data=args.data, epochs=args.epochs)
+    rows = run(args.configs, data=args.data, epochs=args.epochs, seed=args.seed)
     print(f"\n{'experimento':<14}{'épocas':>8}{'mejor':>8}{'val_loss':>10}{'val_acc':>9}")
     for r in rows:
         print(f"{r['name']:<14}{r['epochs']:>8}{r['best_epoch']:>8}{r['val_loss']:>10.4f}{r['val_acc']:>9.3f}")
