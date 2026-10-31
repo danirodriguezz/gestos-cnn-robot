@@ -1,0 +1,4 @@
+# Búsqueda de hiperparámetros: completo con un solo cambio. 4 bloques convolucionales en lugar de 5
+# (se quita el último de 256: el mapa final es de 8x8 en lugar de 4x4).
+name: hp_4_bloques
+channels: [32, 64, 128, 256]

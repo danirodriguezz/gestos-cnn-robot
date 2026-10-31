@@ -1,0 +1,3 @@
+# Búsqueda de hiperparámetros: completo con un solo cambio. Tasa de aprendizaje 3e-3 (completo: 1e-3).
+name: hp_lr_3e-3
+lr: 3.0e-3

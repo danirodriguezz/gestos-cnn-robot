@@ -1,0 +1,11 @@
+experimento,cambio,parametros,epocas,mejor_epoca,val_loss,val_acc,f1_macro,errores
+completo,(referencia),2357673,44,38,0.0358,0.9899,0.9899,24
+hp_4_bloques,"channels=[32, 64, 128, 256]",1176489,39,33,0.05,0.9874,0.9873,30
+hp_batch_128,batch_size=128,2357673,33,27,0.0391,0.9891,0.9891,26
+hp_batch_32,batch_size=32,2357673,45,39,0.028,0.9928,0.9928,17
+hp_elu,activation=elu,2357673,50,46,0.0414,0.9882,0.9882,28
+hp_fc_128,fc_hidden=128,2389417,40,34,0.0368,0.9891,0.9891,26
+hp_filtros_mitad,"channels=[16, 32, 64, 128, 128]",591321,41,35,0.0368,0.9903,0.9903,23
+hp_leaky_relu,activation=leaky_relu,2357673,49,43,0.0319,0.9878,0.9878,29
+hp_lr_3e-3,lr=0.003,2357673,29,23,0.0357,0.9907,0.9907,22
+hp_lr_3e-4,lr=0.0003,2357673,31,25,0.0329,0.9886,0.9886,27

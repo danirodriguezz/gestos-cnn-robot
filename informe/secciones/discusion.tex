@@ -10,8 +10,10 @@ alarma. Hemos descartado las fugas más probables:
   \item la partición es por persona y una prueba automática confirma que no hay personas
     compartidas;
   \item las estadísticas de normalización se calculan solo con entrenamiento;
-  \item todas las decisiones se tomaron con validación, y el test se evaluó una sola vez y
-    después de elegir el modelo; y
+  \item todas las decisiones se tomaron con validación y el test se evaluó una sola vez por
+    modelo (con la salvedad, explicada en la \cref{sec:protocolo}, de que el modelo final se
+    cambió tras la búsqueda de hiperparámetros, cuando el test ya se había evaluado con el
+    anterior); y
   \item validación y test, con personas distintas, dan resultados casi idénticos.
 \end{enumerate*}
 Creemos que la exactitud alta se explica más bien por la naturaleza de la tarea tal como la
@@ -42,6 +44,15 @@ importancia ante el cambio de dominio a la webcam (otras cámaras, iluminación 
 nuestro conjunto de test no representa; el aumento de datos se diseñó precisamente para simular
 esas variaciones.
 
+\paragraph{Sensibilidad a los hiperparámetros.}
+La búsqueda muestra que, alrededor de la configuración inicial, el resultado depende poco de los
+hiperparámetros: nueve cambios de tasa de aprendizaje, lote, capacidad y activación mueven la
+exactitud de validación menos de medio punto, y casi siempre dentro de la variación entre semillas.
+El único cambio elegido, el lote de 32, mejoró la validación pero no el test, lo que ilustra el
+riesgo de elegir entre muchas configuraciones con un único conjunto de validación pequeño. El
+resultado más útil de la búsqueda es otro: con cuatro veces menos parámetros la red rinde igual,
+así que la capacidad de GestureCNN no es lo que limita la exactitud.
+
 \paragraph{CNN propia frente a modelo preentrenado.}
 La comparación con ResNet18 matiza la idea de que un modelo más grande y preentrenado es siempre
 mejor. Con \NTrain{} imágenes de entrenamiento, una tarea bien acotada y entradas de
@@ -63,9 +74,11 @@ realiza, porque trabaja a mayor resolución en sus primeras capas.
   \item \textbf{Pocas repeticiones.} Dos semillas por variante bastan para ver la magnitud de la
     variación entre ejecuciones, pero no para estimar con precisión diferencias de pocas décimas.
     La ResNet18 se entrenó una sola vez.
-  \item \textbf{Sin búsqueda de hiperparámetros.} La configuración inicial se mantuvo porque ya
-    superaba el objetivo; es posible que otras tasas de aprendizaje o tamaños de lote mejoren
-    alguna variante, en particular la red sin BN.
+  \item \textbf{Búsqueda de hiperparámetros limitada.} La búsqueda cambia un hiperparámetro cada
+    vez, con una sola semilla por configuración, de modo que no explora interacciones y sus
+    diferencias son del orden del ruido entre ejecuciones. Además, se hizo solo sobre el modelo
+    completo: es posible que otra tasa de aprendizaje mejore alguna variante de la ablación, en
+    particular la red sin BN.
   \item \textbf{Ruido de etiqueta en la clase nula.} Algunos \cls{no\_gesture} son en realidad
     gestos (\cref{sec:gradcam}), lo que penaliza al modelo por predicciones correctas y hace que
     la exactitud medida sea una cota algo pesimista en esa clase.

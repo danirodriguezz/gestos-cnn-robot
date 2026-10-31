@@ -13,10 +13,14 @@ El estudio de ablación, repetido con dos semillas, indica que la normalización
 componente imprescindible: sin ella el entrenamiento es mucho más lento y, con el mismo número
 de épocas, comete más del doble de errores (\PmcnemarSinBn). El \emph{dropout} y el aumento de
 datos modifican la dinámica del entrenamiento como se espera de un regularizador, pero su efecto
-sobre la exactitud final es del mismo orden que la variación entre ejecuciones idénticas.
+sobre la exactitud final es del mismo orden que la variación entre ejecuciones idénticas. La
+búsqueda manual de hiperparámetros llega a una conclusión parecida: de \NConfigsBusqueda{}
+cambios de tasa de aprendizaje, lote, capacidad y activación, solo el lote de 32 mejoró la
+validación, y esa mejora no se tradujo en el test. Con la mitad de filtros la red rinde igual con
+cuatro veces menos parámetros.
 
 Frente a un ResNet18 preentrenado, con \RatioParams{} veces más parámetros, la diferencia en test
-no es estadísticamente significativa (\PmcnemarResnet). Ambos modelos clasifican un recorte
+no es estadísticamente significativa (\PmcnemarFinalResnet). Ambos modelos clasifican un recorte
 en pocos milisegundos incluso en CPU, de modo que cualquiera de los dos sirve para una aplicación
 en tiempo real. Grad-CAM confirma que la red basa sus decisiones en la forma de la mano, y los
 errores restantes se deben sobre todo a gestos realmente parecidos, a imágenes de baja calidad y a
@@ -24,6 +28,9 @@ ruido de etiqueta.
 
 \paragraph{Trabajo futuro.}
 \begin{itemize}
+  \item \textbf{Una red más pequeña.} Repetir con varias semillas las configuraciones más
+    prometedoras de la búsqueda, en particular la de la mitad de filtros, que reduciría el
+    tamaño del modelo a la cuarta parte.
   \item \textbf{Medir el cambio de dominio.} Evaluar el sistema completo con las cajas de
     MediaPipe y con vídeos propios grabados con distintas iluminaciones, y comparar el resultado
     con el de test. Es el experimento que más falta para valorar el uso real.

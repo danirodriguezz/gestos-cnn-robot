@@ -1,0 +1,18 @@
+{
+  "accuracy": 0.9882105263157894,
+  "f1_macro": 0.9881935120704919,
+  "f1_por_clase": {
+    "stop": 0.9905,
+    "like": 0.9786,
+    "dislike": 0.9944,
+    "one": 0.9925,
+    "peace": 0.9906,
+    "fist": 0.9981,
+    "palm": 0.9831,
+    "call": 0.9813,
+    "no_gesture": 0.9846
+  },
+  "n": 2375,
+  "split": "val",
+  "ckpt": "/home/daniel/Documentos/Universidad/4Year/Aprendizaje_Automatico_2/Practica_Redes_Convolucionales/gestos-cnn-robot/results/hp_elu/best.pt"
+}

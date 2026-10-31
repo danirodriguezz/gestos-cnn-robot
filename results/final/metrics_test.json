@@ -1,18 +1,18 @@
 {
-  "accuracy": 0.9898904802021904,
-  "f1_macro": 0.9898637853720762,
+  "accuracy": 0.9903117101937658,
+  "f1_macro": 0.9903136386290478,
   "f1_por_clase": {
-    "stop": 0.9847,
-    "like": 0.9825,
-    "dislike": 1.0,
-    "one": 0.9944,
-    "peace": 0.9906,
-    "fist": 0.9981,
-    "palm": 0.9811,
-    "call": 0.9888,
-    "no_gesture": 0.9885
+    "stop": 0.9811,
+    "like": 0.9923,
+    "dislike": 0.9925,
+    "one": 0.9962,
+    "peace": 0.9888,
+    "fist": 1.0,
+    "palm": 0.9829,
+    "call": 0.9944,
+    "no_gesture": 0.9848
   },
   "n": 2374,
   "split": "test",
-  "ckpt": "results/final/best.pt"
+  "ckpt": "results/hp_batch_32/best.pt"
 }

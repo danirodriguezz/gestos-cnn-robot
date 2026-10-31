@@ -16,19 +16,19 @@
 \newcommand{\NoGestureKept}{1.760}
 \newcommand{\LadoCajaMediana}{68\,px}
 \newcommand{\LadoCajaPdiez}{36\,px}
-\newcommand{\AccValFinal}{98{,}99\,\%}
-\newcommand{\FoneValFinal}{98{,}99\,\%}
-\newcommand{\ErroresValFinal}{24}
-\newcommand{\AccTestFinal}{98{,}99\,\%}
-\newcommand{\FoneTestFinal}{98{,}99\,\%}
-\newcommand{\ErroresTestFinal}{24}
-\newcommand{\EpocasFinal}{44}
-\newcommand{\MejorepocaFinal}{38}
-\newcommand{\ReduccioneslrFinal}{22, 32 y 43}
+\newcommand{\AccValFinal}{99{,}28\,\%}
+\newcommand{\FoneValFinal}{99{,}28\,\%}
+\newcommand{\ErroresValFinal}{17}
+\newcommand{\AccTestFinal}{99{,}03\,\%}
+\newcommand{\FoneTestFinal}{99{,}03\,\%}
+\newcommand{\ErroresTestFinal}{23}
+\newcommand{\EpocasFinal}{45}
+\newcommand{\MejorepocaFinal}{39}
+\newcommand{\ReduccioneslrFinal}{21, 36 y 44}
 \newcommand{\NreduccioneslrFinal}{3}
-\newcommand{\AccepocaunoFinal}{25{,}7\,\%}
-\newcommand{\EpocanoventaycincoFinal}{7}
-\newcommand{\BrechaFinal}{0{,}5}
+\newcommand{\AccepocaunoFinal}{25{,}5\,\%}
+\newcommand{\EpocanoventaycincoFinal}{6}
+\newcommand{\BrechaFinal}{0{,}6}
 \newcommand{\AccValCompleto}{98{,}99\,\%}
 \newcommand{\FoneValCompleto}{98{,}99\,\%}
 \newcommand{\ErroresValCompleto}{24}
@@ -146,19 +146,20 @@
 \newcommand{\AccepocaunoResnet}{97{,}6\,\%}
 \newcommand{\EpocanoventaycincoResnet}{1}
 \newcommand{\BrechaResnet}{0{,}7}
-\newcommand{\AccTestFinalIC}{[98{,}53\,\%;\ 99{,}40\,\%]}
-\newcommand{\FoneTestFinalIC}{[98{,}53\,\%;\ 99{,}41\,\%]}
+\newcommand{\AccTestFinalIC}{[98{,}61\,\%;\ 99{,}42\,\%]}
+\newcommand{\FoneTestFinalIC}{[98{,}61\,\%;\ 99{,}42\,\%]}
 \newcommand{\NBoot}{2.000}
+\newcommand{\AccTestCompletoIC}{[98{,}53\,\%;\ 99{,}40\,\%]}
 \newcommand{\AccTestResnetIC}{[98{,}76\,\%;\ 99{,}57\,\%]}
 \newcommand{\FoneTestResnetIC}{[98{,}76\,\%;\ 99{,}58\,\%]}
-\newcommand{\ConfusionesTestFinal}{\textit{like}$\to$\textit{call} (5), \textit{palm}$\to$\textit{stop} (4), \textit{stop}$\to$\textit{palm} (4), \textit{no\_gesture}$\to$\textit{like} (2)}
-\newcommand{\PeorClaseTest}{\textit{palm}}
+\newcommand{\ConfusionesTestFinal}{\textit{palm}$\to$\textit{stop} (6), \textit{stop}$\to$\textit{palm} (3), \textit{dislike}$\to$\textit{no\_gesture} (2), \textit{like}$\to$\textit{call} (2)}
+\newcommand{\PeorClaseTest}{\textit{stop}}
 \newcommand{\PeorFoneTest}{98{,}1\,\%}
 \newcommand{\FalsasActivaciones}{5}
 \newcommand{\NNoGestureTest}{264}
 \newcommand{\TasaFalsasActivaciones}{1{,}9\,\%}
-\newcommand{\Omisiones}{1}
-\newcommand{\ErroresEnPares}{13}
+\newcommand{\Omisiones}{3}
+\newcommand{\ErroresEnPares}{11}
 \newcommand{\AccValMediaCompleto}{98{,}91\,\%}
 \newcommand{\AccTestMediaCompleto}{99{,}01\,\%}
 \newcommand{\FoneValMediaCompleto}{98{,}91\,\%}
@@ -184,22 +185,34 @@
 \newcommand{\PmcnemarSinAug}{$p = 0{,}701$}
 \newcommand{\SolocompletoSinAug}{15}
 \newcommand{\SolovarianteSinAug}{12}
-\newcommand{\PmcnemarResnet}{$p = 0{,}424$}
-\newcommand{\SolocompletoResnet}{10}
+\newcommand{\PmcnemarFinalCompleto}{$p = 1{,}000$}
+\newcommand{\SolofinalCompleto}{9}
+\newcommand{\SolovarianteCompleto}{8}
+\newcommand{\PmcnemarFinalResnet}{$p = 0{,}557$}
+\newcommand{\SolofinalResnet}{11}
 \newcommand{\SolovarianteResnet}{15}
+\newcommand{\NConfigsBusqueda}{9}
+\newcommand{\ParamsFiltrosMitad}{591\,k}
+\newcommand{\ParamsCuatroBloques}{1{,}18\,M}
+\newcommand{\EpocasLrAlta}{29}
+\newcommand{\AccValLrAlta}{99{,}07\,\%}
+\newcommand{\AccValFiltrosMitad}{99{,}03\,\%}
+\newcommand{\AccValBusquedaMin}{98{,}74\,\%}
+\newcommand{\AccValBusquedaMax}{99{,}07\,\%}
 \newcommand{\VersionTorch}{2.14.1}
 \newcommand{\GPU}{GTX 1660 Ti}
 \newcommand{\CPU}{Intel Core i7-9750H @ 2.60GHz}
 \newcommand{\CPUHilos}{6}
 \newcommand{\ParamsFinal}{2{,}36\,M}
 \newcommand{\MacsFinal}{920\,M}
-\newcommand{\LatCpuFinal}{8{,}68\,ms}
-\newcommand{\LatCudaFinal}{1{,}03\,ms}
+\newcommand{\LatCpuFinal}{8{,}81\,ms}
+\newcommand{\LatCudaFinal}{1{,}04\,ms}
 \newcommand{\SepocaFinal}{25{,}5\,s}
+\newcommand{\SepocaLoteFinal}{26{,}8\,s}
 \newcommand{\ParamsResnet}{11{,}18\,M}
 \newcommand{\MacsResnet}{592\,M}
-\newcommand{\LatCpuResnet}{10{,}23\,ms}
-\newcommand{\LatCudaResnet}{2{,}07\,ms}
+\newcommand{\LatCpuResnet}{9{,}70\,ms}
+\newcommand{\LatCudaResnet}{2{,}06\,ms}
 \newcommand{\SepocaResnet}{12{,}1\,s}
 \newcommand{\FracMacsPrimerosBloques}{43\,\%}
 \newcommand{\FracParamsPrimerosBloques}{3\,\%}
@@ -254,8 +267,6 @@ Completo & 98{,}99\,\% & 98{,}82\,\% & 24 & 23 & — & — & — \\
 Sin dropout & 98{,}95\,\% & 99{,}12\,\% & 28 & 21 & 14 & 10 & 0{,}541 \\
 Sin BN & 97{,}52\,\% & 97{,}60\,\% & 55 & 49 & 42 & 11 & $<\!0{,}001$ \\
 Sin augmentation & 98{,}65\,\% & 98{,}82\,\% & 27 & 37 & 15 & 12 & 0{,}701 \\
-\midrule
-ResNet18 preentrenado & 99{,}41\,\% & — & 19 & — & 10 & 15 & 0{,}424 \\
 \bottomrule
 \end{tabular}}
 
@@ -264,15 +275,15 @@ ResNet18 preentrenado & 99{,}41\,\% & — & 19 & — & 10 & 15 & 0{,}424 \\
 \toprule
 Clase & Orden & Precisión & Recall & F1 & $n$ \\
 \midrule
-\textit{stop} & Parar & 98{,}5\,\% & 98{,}5\,\% & 98{,}5\,\% & 262 \\
-\textit{like} & Avanzar & 99{,}2\,\% & 97{,}3\,\% & 98{,}3\,\% & 260 \\
-\textit{dislike} & Retroceder & 100{,}0\,\% & 100{,}0\,\% & 100{,}0\,\% & 267 \\
-\textit{one} & Girar a la izquierda & 99{,}3\,\% & 99{,}6\,\% & 99{,}4\,\% & 266 \\
-\textit{peace} & Girar a la derecha & 98{,}9\,\% & 99{,}2\,\% & 99{,}1\,\% & 266 \\
-\textit{fist} & Cerrar pinza & 100{,}0\,\% & 99{,}6\,\% & 99{,}8\,\% & 261 \\
-\textit{palm} & Abrir pinza & 97{,}7\,\% & 98{,}5\,\% & 98{,}1\,\% & 264 \\
-\textit{call} & Volver al inicio & 97{,}8\,\% & 100{,}0\,\% & 98{,}9\,\% & 264 \\
-\textit{no\_gesture} & Ninguna (quieto) & 99{,}6\,\% & 98{,}1\,\% & 98{,}9\,\% & 264 \\
+\textit{stop} & Parar & 97{,}4\,\% & 98{,}9\,\% & 98{,}1\,\% & 262 \\
+\textit{like} & Avanzar & 99{,}6\,\% & 98{,}8\,\% & 99{,}2\,\% & 260 \\
+\textit{dislike} & Retroceder & 99{,}6\,\% & 98{,}9\,\% & 99{,}2\,\% & 267 \\
+\textit{one} & Girar a la izquierda & 99{,}6\,\% & 99{,}6\,\% & 99{,}6\,\% & 266 \\
+\textit{peace} & Girar a la derecha & 98{,}5\,\% & 99{,}2\,\% & 98{,}9\,\% & 266 \\
+\textit{fist} & Cerrar pinza & 100{,}0\,\% & 100{,}0\,\% & 100{,}0\,\% & 261 \\
+\textit{palm} & Abrir pinza & 98{,}9\,\% & 97{,}7\,\% & 98{,}3\,\% & 264 \\
+\textit{call} & Volver al inicio & 98{,}9\,\% & 100{,}0\,\% & 99{,}4\,\% & 264 \\
+\textit{no\_gesture} & Ninguna (quieto) & 98{,}9\,\% & 98{,}1\,\% & 98{,}5\,\% & 264 \\
 \bottomrule
 \end{tabular}}
 
@@ -283,8 +294,30 @@ Clase & Orden & Precisión & Recall & F1 & $n$ \\
 \cmidrule(lr){5-6}\cmidrule(lr){7-8}
 Modelo & Parámetros & MACs & s/época & mediana & p95 & mediana & p95 \\
 \midrule
-GestureCNN & 2{,}36\,M & 920\,M & 25{,}5 & 8{,}68 & 9{,}62 & 1{,}03 & 1{,}07 \\
-ResNet18 & 11{,}18\,M & 592\,M & 12{,}1 & 10{,}23 & 10{,}62 & 2{,}07 & 2{,}29 \\
+GestureCNN & 2{,}36\,M & 920\,M & 25{,}5 & 8{,}81 & 11{,}04 & 1{,}04 & 1{,}14 \\
+ResNet18 & 11{,}18\,M & 592\,M & 12{,}1 & 9{,}70 & 11{,}74 & 2{,}06 & 2{,}46 \\
+\bottomrule
+\end{tabular}}
+
+\newcommand{\TablaBusqueda}{%
+\begin{tabular}{llrcrrrr}
+\toprule
+Hiperparámetro & Valor & Parám. & Épocas (mejor) & Pérdida & Acc. & F1 macro & Errores \\
+\midrule
+Referencia (\emph{completo}) & — & 2{,}36\,M & 44 (38) & 0{,}0358 & 98{,}99\,\% & 98{,}99\,\% & 24 \\
+\midrule
+Tasa de aprendizaje & $3\cdot10^{-4}$ & 2{,}36\,M & 31 (25) & 0{,}0329 & 98{,}86\,\% & 98{,}86\,\% & 27 \\
+ & $3\cdot10^{-3}$ & 2{,}36\,M & 29 (23) & 0{,}0357 & 99{,}07\,\% & 99{,}07\,\% & 22 \\
+\midrule
+Tamaño de lote & 32 & \textbf{2{,}36\,M} & \textbf{45 (39)} & \textbf{0{,}0280} & \textbf{99{,}28\,\%} & \textbf{99{,}28\,\%} & \textbf{17} \\
+ & 128 & 2{,}36\,M & 33 (27) & 0{,}0391 & 98{,}91\,\% & 98{,}91\,\% & 26 \\
+\midrule
+Filtros & 16--128 & 0{,}59\,M & 41 (35) & 0{,}0368 & 99{,}03\,\% & 99{,}03\,\% & 23 \\
+Nº de bloques & 4 & 1{,}18\,M & 39 (33) & 0{,}0500 & 98{,}74\,\% & 98{,}73\,\% & 30 \\
+Capa oculta & 128 neuronas & 2{,}39\,M & 40 (34) & 0{,}0368 & 98{,}91\,\% & 98{,}91\,\% & 26 \\
+\midrule
+Activación & ELU & 2{,}36\,M & 50 (46) & 0{,}0414 & 98{,}82\,\% & 98{,}82\,\% & 28 \\
+ & LeakyReLU & 2{,}36\,M & 49 (43) & 0{,}0319 & 98{,}78\,\% & 98{,}78\,\% & 29 \\
 \bottomrule
 \end{tabular}}
 

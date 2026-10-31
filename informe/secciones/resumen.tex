@@ -8,12 +8,15 @@ Partimos de un subconjunto de HaGRID con ocho gestos (\cls{stop}, \cls{like}, \c
 $128\times128$\,px y dividimos los datos \emph{por persona}, de modo que las \PersonasTest{}
 personas de test no aparecen en entrenamiento ni en validación.
 La red propuesta, GestureCNN, tiene cinco bloques convolucionales con normalización por lotes,
-\emph{dropout} y \emph{global average pooling} (\ParamsFinal{} parámetros). En test alcanza una
+\emph{dropout} y \emph{global average pooling} (\ParamsFinal{} parámetros). Tras una búsqueda
+manual de \NConfigsBusqueda{} configuraciones, el modelo final se entrena con lotes de 32. En
+test alcanza una
 exactitud del \AccTestFinal{} (IC del 95\,\% por \emph{bootstrap} por persona: \AccTestFinalIC)
 y una F1 macro del \FoneTestFinal, muy por encima del objetivo del 85\,\%.
 Un estudio de ablación con dos semillas indica que la normalización por lotes es el componente
 decisivo, mientras que el \emph{dropout} y el aumento de datos tienen efectos pequeños sobre la
-exactitud con este conjunto de datos. Un ResNet18 preentrenado en ImageNet sirve de referencia
+exactitud con este conjunto de datos; la búsqueda de hiperparámetros muestra también una
+sensibilidad baja a la tasa de aprendizaje, al lote, a la capacidad y a la activación. Un ResNet18 preentrenado en ImageNet sirve de referencia
 (\AccTestResnet{} en test) con \RatioParams{} veces más parámetros. Los mapas Grad-CAM muestran que la red
 atiende a los dedos que distinguen cada gesto, y los errores restantes se concentran en pares
 visualmente próximos (\cls{stop}/\cls{palm}, \cls{like}/\cls{call}) y en ejemplos con ruido de

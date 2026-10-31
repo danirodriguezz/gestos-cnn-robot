@@ -1,9 +1,73 @@
 \section{Resultados}
 \label{sec:resultados}
 
+\subsection{Búsqueda de hiperparámetros}
+\label{sec:busqueda}
+
+La \cref{tab:busqueda} recoge las \NConfigsBusqueda{} configuraciones de la búsqueda junto con la
+de referencia, y la \cref{fig:busqueda} compara sus curvas de validación agrupadas por tipo de
+hiperparámetro. El primer resultado es que la red es poco sensible a todos los cambios probados:
+salvo el lote de 32, todas las configuraciones quedan entre el \AccValBusquedaMin{} y el
+\AccValBusquedaMax{} de exactitud de validación, a pocas imágenes de la referencia
+(\AccValCompleto, \ErroresValCompleto{} errores). Como referencia del ruido, dos ejecuciones
+idénticas del modelo completo con semillas distintas obtienen \AccValCompleto{} y
+\AccValCompletoS{} (\ErroresValCompleto{} y \ErroresValCompletoS{} errores), así que la mayoría de
+las diferencias de la tabla no deben interpretarse como efectos de los hiperparámetros.
+
+\begin{table}[t]
+  \centering
+  \caption{Búsqueda manual de hiperparámetros, solo en validación (\NVal{} imágenes). Cada fila
+    cambia un único hiperparámetro de la referencia (tasa de aprendizaje $10^{-3}$, lote de 64,
+    cinco bloques de 32 a 256 filtros, sin capa oculta y ReLU); todas usan la semilla 42. Pérdida:
+    pérdida de validación en la mejor época. En negrita, la configuración elegida como modelo final.}
+  \label{tab:busqueda}
+  \small
+  \setlength{\tabcolsep}{3.3pt}
+  \TablaBusqueda
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/busqueda_curvas.png}
+  \caption{Curvas de validación de la búsqueda, un panel por tipo de hiperparámetro. En gris, la
+    configuración de referencia. Arriba, la pérdida en escala logarítmica; abajo, la exactitud,
+    ampliada por encima del 95\,\%. El punto marca la mejor época (pesos restaurados).}
+  \label{fig:busqueda}
+\end{figure}
+
+Por grupos:
+\begin{itemize}
+  \item \textbf{Tasa de aprendizaje.} Con $3\cdot10^{-3}$ y con $3\cdot10^{-4}$ la parada
+    anticipada actúa antes (épocas \EpocasLrAlta{} y 31, frente a \EpocasCompleto), pero la
+    exactitud final no cambia de forma apreciable. Probablemente, Adam y la reducción de la tasa en las
+    mesetas hacen que el valor inicial importe poco dentro de este intervalo.
+  \item \textbf{Tamaño de lote.} Es el único cambio que mejora tanto la exactitud como la pérdida
+    de validación: con lotes de 32 se obtiene la menor pérdida de la búsqueda y
+    \ErroresValFinal{} errores, frente a \ErroresValCompleto. Con la misma tasa de aprendizaje, un
+    lote menor da el doble de actualizaciones por época y un gradiente más ruidoso, que actúa
+    como un regularizador adicional. El lote de 128 va en la dirección contraria: para antes y
+    queda ligeramente por debajo.
+  \item \textbf{Capacidad.} Con la mitad de filtros en cada bloque, la red tiene cuatro veces
+    menos parámetros (\ParamsFiltrosMitad) y obtiene la misma exactitud (\AccValFiltrosMitad).
+    Esto indica que GestureCNN está sobredimensionada para esta tarea. Quitar el último bloque
+    es el cambio que más empeora el resultado y el que más ralentiza el aprendizaje
+    (\cref{fig:busqueda}): con un mapa final de $8\times8$, cada filtro de la última capa ve una
+    región menor de la mano antes del \emph{global average pooling}. Añadir una capa oculta a la
+    cabeza no aporta nada.
+  \item \textbf{Activación.} ELU y LeakyReLU quedan algo por debajo de ReLU y tardan más en
+    converger. Con ELU, el entrenamiento llegó al máximo de 50 épocas.
+\end{itemize}
+
+Siguiendo el criterio fijado de antemano, elegimos como modelo final la configuración con lotes de
+32. Su ventaja en validación (siete errores menos que la referencia) es mayor que la diferencia
+entre las dos semillas del modelo completo, pero procede de una sola ejecución. Además, al elegir
+la mejor de diez configuraciones con el mismo conjunto de validación, su exactitud de validación
+tiende a sobrestimar la real. El test permite comprobarlo (\cref{sec:test}).
+
 \subsection{Entrenamiento del modelo final}
 
-La \cref{fig:curvas} muestra las curvas de entrenamiento del modelo final. La parada anticipada
+La \cref{fig:curvas} muestra las curvas de entrenamiento del modelo final, GestureCNN con lotes
+de 32. La parada anticipada
 detuvo el entrenamiento en la época \EpocasFinal{} y restauró los pesos de la época
 \MejorepocaFinal, la de menor pérdida de validación. La exactitud de validación supera el 95\,\%
 en la época \EpocanoventaycincoFinal; a partir de ahí, las \NreduccioneslrFinal{} reducciones de la
@@ -31,9 +95,19 @@ Evaluado una sola vez sobre las \NTest{} imágenes de las \PersonasTest{} person
 modelo final alcanza una exactitud del \AccTestFinal{} (IC del 95\,\%: \AccTestFinalIC) y una F1
 macro del \FoneTestFinal{} (IC: \FoneTestFinalIC), con \ErroresTestFinal{} errores. El objetivo del
 85\,\% se supera con un margen de unos 14 puntos, y el extremo inferior del intervalo de confianza
-queda también muy por encima. La exactitud de validación (\AccValFinal) es prácticamente igual
-a la de test, lo que indica que la selección del modelo con validación no introdujo un sesgo
-optimista apreciable.
+queda también muy por encima.
+
+\paragraph{Comparación con el modelo final anterior.}
+Como se explica en la \cref{sec:protocolo}, el test ya se había evaluado con el modelo completo
+(lotes de 64) antes de la búsqueda. Ese modelo obtuvo un \AccTestCompleto{} (IC del 95\,\%:
+\AccTestCompletoIC) con \ErroresTestCompleto{} errores, de modo que en test los dos modelos son
+prácticamente iguales. Sobre las mismas imágenes, \SolofinalCompleto{} las acierta solo el modelo
+final y \SolovarianteCompleto{} solo el completo (McNemar: \PmcnemarFinalCompleto). La mejora de
+validación que motivó el cambio no se traslada al test. Es lo esperable si se debía en buena parte
+al ruido y a haber elegido la mejor de diez configuraciones: la exactitud de validación del modelo
+final (\AccValFinal) supera a la de test, mientras que la del modelo completo, que no se eligió
+entre tantas alternativas, coincidía con ella (\AccValCompleto{} y \AccTestCompleto). Ninguna de
+las conclusiones del trabajo depende de cuál de los dos modelos se tome como final.
 
 \begin{table}[t]
   \centering
@@ -170,7 +244,7 @@ los \ErroresTestFinal{} de GestureCNN.
 
 La diferencia, sin embargo, no es estadísticamente significativa. Sobre las mismas imágenes de
 test, solo \SolovarianteResnet{} imágenes las acierta ResNet18 y falla GestureCNN, y
-\SolocompletoResnet{} al revés; la prueba de McNemar da \PmcnemarResnet, y los intervalos de
+\SolofinalResnet{} al revés; la prueba de McNemar da \PmcnemarFinalResnet, y los intervalos de
 confianza de ambos modelos se solapan ampliamente. Con estos datos, por tanto, no podemos afirmar
 que un modelo con \RatioParams{} veces más parámetros y preentrenado con más de un millón de
 imágenes generalice mejor que nuestra red entrenada desde cero. Lo que sí aporta el
@@ -196,12 +270,13 @@ propia resulta más interpretable.
 
 La \cref{fig:gradcam-aciertos} muestra un acierto de cada clase en validación con su mapa
 Grad-CAM. En todos los casos la activación se concentra sobre la mano y no sobre el fondo: en
-\cls{stop} la cara de la persona aparece en el recorte y queda fuera del mapa, y en \cls{call} la
-activación cubre la mano y solo la parte de la mejilla con la que está en contacto. Además, los
-mapas señalan los rasgos que definen cada gesto: los dedos extendidos en \cls{stop}, \cls{peace}
-y \cls{palm}, la zona del pulgar hacia abajo en \cls{dislike} y el dedo índice en \cls{one}.
-El ejemplo de \cls{like} es un recorte muy borroso, y la red lo clasifica con una confianza menor
-(0,91) y un mapa más difuso.
+\cls{stop} la cara de la persona aparece en el recorte y queda fuera del mapa. Además, los mapas
+señalan los rasgos que definen cada gesto: la palma y la base de los dedos en \cls{stop} y
+\cls{palm}, el puño con el pulgar hacia abajo en \cls{dislike} y, sobre todo, \cls{call}, cuyo
+mapa tiene dos máximos, uno sobre el pulgar y otro sobre el meñique, los dos dedos extendidos que
+definen el gesto. El ejemplo con menos confianza es un \cls{peace} (0,57) con el fondo partido por
+una franja negra de relleno, en el que el mapa se reparte entre los dos dedos y el borde de la
+imagen.
 
 \begin{figure}[t]
   \centering
@@ -220,15 +295,15 @@ especialmente informativos porque se agrupan en tres tipos:
     hacia la cámara; la etiqueta \cls{no\_gesture} procede de la anotación original. En este
     caso la predicción es más razonable que la etiqueta.
   \item \textbf{Objetos con forma de gesto.} Un \cls{no\_gesture} que sujeta un teléfono se
-    clasifica como \cls{peace}: el mapa de la clase predicha se concentra sobre el borde vertical
-    del teléfono, que la red interpreta como dedos extendidos.
-  \item \textbf{Pares próximos e imágenes de baja calidad.} En los errores
-    \cls{stop}$\leftrightarrow$\cls{palm} la separación entre los dedos es intermedia o no se
-    aprecia (una de las manos está muy borrosa), y los mapas de la clase real y de la predicha se
-    concentran en la misma zona, lo que indica que la red mira el lugar correcto pero la evidencia
-    es ambigua. Los dos \cls{like} clasificados como \cls{call} muestran la mano de perfil, una
-    vista en la que la silueta del pulgar levantado se parece a la de \cls{call}. El
-    \cls{peace}$\to$\cls{one} corresponde a una imagen muy desenfocada.
+    clasifica como \cls{peace}, y en un \cls{one} delante de una estantería el borde vertical del
+    mueble, junto al índice, se lee como un segundo dedo extendido (\cls{peace}).
+  \item \textbf{Pares próximos e imágenes de baja calidad.} En los dos
+    \cls{palm}$\to$\cls{stop} la separación entre los dedos es intermedia, y los mapas de la clase
+    real y de la predicha se concentran en la misma zona: la red mira el lugar correcto, pero la
+    evidencia es ambigua. Los \cls{like} vistos de perfil se confunden con \cls{call} o con
+    \cls{one}, porque en esa vista el pulgar levantado se parece al meñique de \cls{call} o al
+    índice de \cls{one}. Un \cls{palm} pixelado hasta ser irreconocible se clasifica como
+    \cls{peace}.
 \end{itemize}
 
 \begin{figure}[t]
@@ -251,12 +326,14 @@ $64\times64$\,px; estos bloques acumulan el \FracMacsPrimerosBloques{} de las op
 solo el \FracParamsPrimerosBloques{} de los parámetros. ResNet18, en cambio, reduce la resolución a
 la cuarta parte en sus dos primeras capas (convolución $7\times7$ con paso 2 y \emph{max pooling}).
 Esto explica que una época de GestureCNN tarde \RatioSEpoca{} veces más que una de ResNet18
-(\SepocaFinal{} frente a \SepocaResnet).
+(\SepocaFinal{} frente a \SepocaResnet, ambas con lotes de 64; con los lotes de 32 del modelo final,
+\SepocaLoteFinal).
 
 \begin{table}[t]
   \centering
   \caption{Coste de GestureCNN y ResNet18 con entradas de $128\times128$. MACs:
-    multiplicaciones-acumulaciones por imagen. Latencia con un lote de una imagen (mediana y
+    multiplicaciones-acumulaciones por imagen. s/época: con lotes de 64 en ambos modelos. Latencia
+    con un lote de una imagen (mediana y
     percentil 95 de 200 pasadas). Equipo: \CPU{} y \GPU.}
   \label{tab:coste}
   \small

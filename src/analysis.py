@@ -13,7 +13,9 @@ Escribe:
 Qué calcula:
     - IC del 95 % por bootstrap por persona: se remuestrean user_id, no imágenes, porque las
       fotos de una misma persona no son independientes (un IC por imagen saldría demasiado estrecho)
-    - prueba de McNemar exacta entre completo y cada variante, con las mismas imágenes de test
+    - prueba de McNemar exacta entre completo y cada variante, con las mismas imágenes de test, y del
+      modelo final frente a completo y a ResNet18
+    - tabla de la búsqueda de hiperparámetros (results/tablas/busqueda.csv, de src/busqueda.py)
     - media de las dos semillas (42 y 43) de cada variante de la ablación
     - parámetros, MACs por imagen, segundos por época (de los logs) y latencia con lote de 1
 """
@@ -25,6 +27,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+import yaml
 from scipy.stats import binomtest
 from sklearn.metrics import confusion_matrix, f1_score, precision_recall_fscore_support
 
@@ -36,7 +39,16 @@ from src.model import count_params, load_checkpoint
 ABLATION = ["completo", "sin_dropout", "sin_bn", "sin_aug"]
 SEEDS = {42: "", 43: "_s43"}                     # sufijo de la carpeta de cada semilla
 REFERENCE = "resnet18"
-FINAL = "final"                                  # copia de results/completo (misma semilla 42)
+FINAL = "final"                                  # copia de results/hp_batch_32, elegido en la búsqueda
+BASE = "completo"                                # referencia de la ablación y de la búsqueda (semilla 42)
+SEARCH_CSV = RESULTS / "tablas" / "busqueda.csv"
+SEARCH_ROWS = [  # (experimento, hiperparámetro, valor probado); en el mismo orden que la tabla del informe
+    ("completo", r"Referencia (\emph{completo})", "—"),
+    ("hp_lr_3e-4", "Tasa de aprendizaje", r"$3\cdot10^{-4}$"), ("hp_lr_3e-3", "", r"$3\cdot10^{-3}$"),
+    ("hp_batch_32", "Tamaño de lote", "32"), ("hp_batch_128", "", "128"),
+    ("hp_filtros_mitad", "Filtros", "16--128"), ("hp_4_bloques", "Nº de bloques", "4"),
+    ("hp_fc_128", "Capa oculta", "128 neuronas"),
+    ("hp_elu", "Activación", "ELU"), ("hp_leaky_relu", "", "LeakyReLU")]
 COMPONENTS = {"completo": ("sí", "sí", "sí"), "sin_dropout": ("no", "sí", "sí"),
               "sin_bn": ("sí", "no", "sí"), "sin_aug": ("sí", "sí", "no"), "resnet18": ("—", "sí", "sí")}
 LABEL = {"completo": "Completo", "sin_dropout": "Sin dropout", "sin_bn": "Sin BN",
@@ -250,6 +262,9 @@ def build_tex(res):
     macro(r"\AccTestFinalIC", f"[{pct(f['bootstrap']['acc_ic'][0])};\\ {pct(f['bootstrap']['acc_ic'][1])}]")
     macro(r"\FoneTestFinalIC", f"[{pct(f['bootstrap']['f1_ic'][0])};\\ {pct(f['bootstrap']['f1_ic'][1])}]")
     macro(r"\NBoot", f"{f['bootstrap']['n_boot']:,}".replace(",", "."))
+    if BASE in res and "bootstrap" in res[BASE]:
+        r = res[BASE]["bootstrap"]
+        macro(r"\AccTestCompletoIC", f"[{pct(r['acc_ic'][0])};\\ {pct(r['acc_ic'][1])}]")
     if "resnet18" in res and "bootstrap" in res["resnet18"]:
         r = res["resnet18"]["bootstrap"]
         macro(r"\AccTestResnetIC", f"[{pct(r['acc_ic'][0])};\\ {pct(r['acc_ic'][1])}]")
@@ -275,6 +290,25 @@ def build_tex(res):
         macro(macro_name("solocompleto", v), str(t["solo_a"]))
         macro(macro_name("solovariante", v), str(t["solo_b"]))
 
+    # --- modelo final frente a completo y a ResNet18 (solo_a = solo acierta el final)
+    for v, t in res.get("mcnemar_final", {}).items():
+        macro(macro_name("pmcnemar", "final", v), pexpr(t["p"]))
+        macro(macro_name("solofinal", v), str(t["solo_a"]))
+        macro(macro_name("solovariante", v), str(t["solo_b"]))
+
+    # --- búsqueda de hiperparámetros
+    if "busqueda" in res:
+        b = res["busqueda"]
+        macro(r"\NConfigsBusqueda", str(len(b) - 1))
+        macro(r"\ParamsFiltrosMitad", num(b["hp_filtros_mitad"]["parametros"] / 1e3, 0) + r"\,k")
+        macro(r"\ParamsCuatroBloques", num(b["hp_4_bloques"]["parametros"] / 1e6, 2) + r"\,M")
+        macro(r"\EpocasLrAlta", str(b["hp_lr_3e-3"]["epocas"]))
+        macro(r"\AccValLrAlta", pct(b["hp_lr_3e-3"]["val_acc"]))
+        macro(r"\AccValFiltrosMitad", pct(b["hp_filtros_mitad"]["val_acc"]))
+        accs = [r["val_acc"] for k, r in b.items() if k != "hp_batch_32"]
+        macro(r"\AccValBusquedaMin", pct(min(accs)))
+        macro(r"\AccValBusquedaMax", pct(max(accs)))
+
     # --- entorno
     e = res["entorno"]
     macro(r"\VersionTorch", e["torch"].split("+")[0])
@@ -291,6 +325,8 @@ def build_tex(res):
                 macro(macro_name("lat", dev, arch), num(c["latencia"][dev]["mediana"], 2) + r"\,ms")
         if c.get("s_epoca"):
             macro(macro_name("sepoca", arch), num(c["s_epoca"], 1) + r"\,s")
+        if c.get("s_epoca_lote_final"):
+            macro(r"\SepocaLoteFinal", num(c["s_epoca_lote_final"], 1) + r"\,s")
     if "primeros_bloques" in res["coste"].get("final", {}):
         pb = res["coste"]["final"]["primeros_bloques"]
         macro(r"\FracMacsPrimerosBloques", pct(pb["frac_macs"], 0))
@@ -306,6 +342,8 @@ def build_tex(res):
     # --- tablas
     out += table_datos(res["datos"]) + table_ablacion(res) + table_semillas(res)
     out += table_por_clase(f["por_clase_test"]) + table_coste(res["coste"])
+    if "busqueda" in res:
+        out += table_busqueda(res["busqueda"])
     return "\n".join(out) + "\n"
 
 
@@ -391,6 +429,27 @@ def table_coste(coste):
     return lines
 
 
+def table_busqueda(b):
+    """Una fila por config; la elegida (mayor exactitud de val) en negrita. Solo validación."""
+    best = max(b, key=lambda k: b[k]["val_acc"])
+    lines = [r"\newcommand{\TablaBusqueda}{%", r"\begin{tabular}{llrcrrrr}", r"\toprule",
+             r"Hiperparámetro & Valor & Parám. & Épocas (mejor) & Pérdida & Acc. & F1 macro & Errores \\",
+             r"\midrule"]
+    for i, (exp, name, value) in enumerate(SEARCH_ROWS):
+        if exp not in b:
+            continue
+        r = b[exp]
+        if i in (1, 3, 5, 8):
+            lines.append(r"\midrule")
+        cells = [num(r["parametros"] / 1e6, 2) + r"\,M", f"{r['epocas']} ({r['mejor_epoca']})",
+                 num(r["val_loss"], 4), pct(r["val_acc"]), pct(r["f1_macro"]), str(r["errores"])]
+        if exp == best:
+            cells = [rf"\textbf{{{c}}}" for c in cells]
+        lines.append(f"{name} & {value} & {' & '.join(cells)} \\\\")
+    lines += [r"\bottomrule", r"\end{tabular}}", ""]
+    return lines
+
+
 # --------------------------------------------------------------------------- principal
 
 def crops_summary(crops_csv=ROOT / "data" / "crops.csv"):
@@ -471,14 +530,24 @@ def main():
                     "por_clase_test": per_class(pt["y_true"], pt["y_pred"]),
                     "confusiones_test": top_confusions_counts(pt["y_true"], pt["y_pred"]),
                     "seguridad_test": safety_errors(pt["y_true"], pt["y_pred"])}
-    if REFERENCE in exps:
-        pr = preds[REFERENCE, "test"]
-        res[REFERENCE] = {"bootstrap": bootstrap_by_group(pr["y_true"], pr["y_pred"], pr["user_id"])}
+    for exp in (BASE, REFERENCE):
+        if exp in exps:
+            pr = preds[exp, "test"]
+            res[exp] = {"bootstrap": bootstrap_by_group(pr["y_true"], pr["y_pred"], pr["user_id"])}
 
-    # McNemar en test: completo (semilla 42) frente a cada variante con la misma semilla y la ResNet18
-    for v in ABLATION[1:] + [REFERENCE]:
+    # McNemar en test: completo (semilla 42) frente a cada variante de la ablación con la misma semilla
+    pb = preds[BASE, "test"]
+    for v in ABLATION[1:]:
         if v in exps:
-            res["mcnemar_test"][v] = mcnemar(pt["y_true"].to_numpy(), pt["y_pred"], preds[v, "test"]["y_pred"])
+            res["mcnemar_test"][v] = mcnemar(pb["y_true"].to_numpy(), pb["y_pred"], preds[v, "test"]["y_pred"])
+    # y el modelo final frente a completo (el final anterior) y a la ResNet18
+    res["mcnemar_final"] = {v: mcnemar(pt["y_true"].to_numpy(), pt["y_pred"], preds[v, "test"]["y_pred"])
+                            for v in (BASE, REFERENCE) if v in exps}
+
+    if SEARCH_CSV.exists():
+        b = pd.read_csv(SEARCH_CSV)
+        res["busqueda"] = {r["experimento"]: {k: (v.item() if hasattr(v, "item") else v) for k, v in r.items()}
+                           for r in b.to_dict("records")}
 
     # media de las semillas disponibles de cada variante (normalmente 42 y 43)
     for v in ABLATION:
@@ -491,8 +560,10 @@ def main():
         res["semillas"][v]["epocas"] = [x["epocas"] for x in e]
         res["semillas"][v]["errores_test"] = [x["test"]["errores"] for x in e]
 
-    # coste: GestureCNN (final) y ResNet18
+    # coste: GestureCNN (final) y ResNet18. El s/época de GestureCNN es el de completo (misma red, lotes
+    # de 64 como la ResNet18); el del lote del modelo final se guarda aparte
     secs = epoch_seconds()
+    final_name = yaml.safe_load((RESULTS / FINAL / "config.yaml").read_text())["name"]
     res["coste"] = {}
     for exp, nombre, log_name in ((FINAL, "GestureCNN", "completo"), (REFERENCE, "ResNet18", "resnet18")):
         if exp not in exps:
@@ -505,6 +576,7 @@ def main():
                              "s_epoca": secs.get(log_name), "latencia": lat}
         if exp == FINAL:
             res["coste"][exp]["primeros_bloques"] = macs_first_blocks(model.cpu())
+            res["coste"][exp]["s_epoca_lote_final"] = secs.get(final_name)
     res["entorno"] = {"torch": torch.__version__, "cpu_hilos": torch.get_num_threads(), "cpu": cpu_name(),
                       "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None}
 
