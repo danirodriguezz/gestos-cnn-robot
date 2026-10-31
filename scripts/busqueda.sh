@@ -1,13 +1,4 @@
 #!/usr/bin/env bash
-# Lanza la búsqueda de hiperparámetros (src/busqueda.py) para dejar el portátil trabajando solo.
-#
-# Uso:  bash scripts/busqueda.sh
-#
-# - Comprueba que el portátil está enchufado: con batería la 1660 Ti baja de potencia y todo va
-#   varias veces más lento (FORZAR=1 bash scripts/busqueda.sh para lanzarlo igualmente).
-# - Impide que el sistema se suspenda, también al cerrar la tapa, mientras dura.
-# - Guarda todo lo que imprime en results/busqueda.log (se añade al final si ya existe).
-# - Si se corta, al relanzarlo continúa por la primera config que no esté terminada.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

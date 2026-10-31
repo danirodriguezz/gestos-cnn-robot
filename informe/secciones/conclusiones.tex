@@ -1,46 +1,30 @@
 \section{Conclusiones y trabajo futuro}
 \label{sec:conclusiones}
 
-Hemos mostrado que una red convolucional pequeña, entrenada desde cero, reconoce un vocabulario
-de ocho gestos más una clase nula con una exactitud del \AccTestFinal{} (IC del 95\,\%:
-\AccTestFinalIC) en personas que nunca vio durante el entrenamiento. Esto supera con holgura el
-objetivo del 85\,\%. Creemos que las claves del resultado son de diseño más que de capacidad:
-clasificar
-recortes de la mano en lugar del fotograma completo, construir la clase nula con manos de las
-mismas imágenes y medir el rendimiento con una partición por persona.
-
-El estudio de ablación, repetido con dos semillas, indica que la normalización por lotes es el
-componente imprescindible: sin ella el entrenamiento es mucho más lento y, con el mismo número
-de épocas, comete más del doble de errores (\PmcnemarSinBn). El \emph{dropout} y el aumento de
-datos modifican la dinámica del entrenamiento como se espera de un regularizador, pero su efecto
-sobre la exactitud final es del mismo orden que la variación entre ejecuciones idénticas. La
-búsqueda manual de hiperparámetros llega a una conclusión parecida: de \NConfigsBusqueda{}
-cambios de tasa de aprendizaje, lote, capacidad y activación, solo el lote de 32 mejoró la
-validación, y esa mejora no se tradujo en el test. Con la mitad de filtros la red rinde igual con
-cuatro veces menos parámetros.
-
-Frente a un ResNet18 preentrenado, con \RatioParams{} veces más parámetros, la diferencia en test
-no es estadísticamente significativa (\PmcnemarFinalResnet). Ambos modelos clasifican un recorte
-en pocos milisegundos incluso en CPU, de modo que cualquiera de los dos sirve para una aplicación
-en tiempo real. Grad-CAM confirma que la red basa sus decisiones en la forma de la mano, y los
-errores restantes se deben sobre todo a gestos realmente parecidos, a imágenes de baja calidad y a
-ruido de etiqueta.
+Una red convolucional pequeña, entrenada desde cero, reconoce ocho gestos más una clase nula con
+una exactitud del \AccTestFinal{} (IC del 95\,\%: \AccTestFinalIC) en personas que nunca vio, muy
+por encima del objetivo del 85\,\%. Las claves del resultado son de diseño más que de capacidad:
+clasificar recortes de la mano, construir la clase nula con manos de las mismas imágenes y medir
+con una partición por persona. La búsqueda manual de \NConfigsBusqueda{} configuraciones y la
+ablación muestran que el modelo es robusto a los hiperparámetros y que la normalización por lotes
+es el único componente imprescindible. Además, con la mitad de filtros la red rinde igual con
+cuatro veces menos parámetros. Un ResNet18 preentrenado no es significativamente mejor
+(\PmcnemarFinalResnet), y Grad-CAM confirma que la red decide por la forma de la mano.
 
 \paragraph{Trabajo futuro.}
 \begin{itemize}
-  \item \textbf{Una red más pequeña.} Repetir con varias semillas las configuraciones más
-    prometedoras de la búsqueda, en particular la de la mitad de filtros, que reduciría el
-    tamaño del modelo a la cuarta parte.
-  \item \textbf{Medir el cambio de dominio.} Evaluar el sistema completo con las cajas de
-    MediaPipe y con vídeos propios grabados con distintas iluminaciones, y comparar el resultado
-    con el de test. Es el experimento que más falta para valorar el uso real.
-  \item \textbf{Entrenar con cajas de detector.} Si el cambio de dominio es grande, entrenar con
-    recortes generados por MediaPipe, o perturbar más las cajas durante el aumento de datos.
-  \item \textbf{Más resolución.} Usar la versión de HaGRID a 512\,px o superior para conservar
-    detalle en manos pequeñas, que es lo que distingue \cls{like} de \cls{call}.
-  \item \textbf{Clase nula más rica.} Revisar las etiquetas ruidosas de \cls{no\_gesture} y
-    añadir posturas de transición entre gestos, que son las que más riesgo tienen de activar una
-    orden por error.
-  \item \textbf{Robot real.} Pasar de \emph{turtlesim} a Gazebo o a un robot físico, que usa la
-    misma interfaz de velocidades.
+  \item \textbf{Demo en tiempo real con ROS\,2.} El diseño previsto encadena captura con OpenCV,
+    detección de la mano con MediaPipe Hands, el mismo recorte de $128\times128$ usado en el
+    entrenamiento, clasificación con GestureCNN y un filtro de seguridad. Este filtro solo emite
+    una orden si la probabilidad supera 0,7 y la clase es la mayoritaria en los últimos 5--7
+    fotogramas; si no, o si la clase es \cls{no\_gesture}, publica velocidad cero. Las órdenes de
+    la \cref{tab:datos} se enviarían como mensajes \code{Twist} a \emph{turtlesim} en ROS\,2
+    \citep{macenski2022ros2}, que usa la misma interfaz que Gazebo o un robot real. La latencia
+    medida (\LatCpuFinal{} en CPU) indica que el clasificador no sería el cuello de botella.
+  \item \textbf{Medir el cambio de dominio} con las cajas de MediaPipe y con vídeo propio, y, si
+    es grande, entrenar con recortes del detector.
+  \item \textbf{Una red más pequeña}: repetir con varias semillas la configuración con la mitad
+    de filtros y explorar interacciones entre hiperparámetros.
+  \item \textbf{Más resolución y una clase nula más rica}: usar HaGRID a 512\,px o más, revisar
+    las etiquetas de \cls{no\_gesture} y añadir posturas de transición entre gestos.
 \end{itemize}

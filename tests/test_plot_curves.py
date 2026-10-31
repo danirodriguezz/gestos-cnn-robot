@@ -10,7 +10,6 @@ from src.train import HISTORY_COLS
 
 
 def fake_history(exp_dir, best=5, n=10):
-    """val_loss baja hasta la época best y luego sube (sobreajuste); el lr se divide entre 2 en la 8."""
     exp_dir.mkdir(parents=True)
     rows = [[e, 2 / e, 0.1 * e / n + 0.5, 1 + abs(e - best) / n, 0.8 - abs(e - best) / 50,
              1e-3 if e < 8 else 5e-4] for e in range(1, n + 1)]

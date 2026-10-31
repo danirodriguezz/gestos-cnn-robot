@@ -1,4 +1,3 @@
-# Ablación: igual que completo pero sin data augmentation en train.
 name: sin_aug
 use_bn: true
 use_dropout: true

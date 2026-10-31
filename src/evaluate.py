@@ -22,16 +22,15 @@ from src.common import CLASSES, SPLITS_CSV
 from src.dataset import SPLITS, get_dataloaders
 from src.model import load_checkpoint
 
-LABELS = list(range(len(CLASSES)))     # se pasan siempre: las 9 clases aparecen aunque falte alguna
+LABELS = list(range(len(CLASSES)))
 
 
-@torch.no_grad()                       # sin gradientes: menos memoria y más rápido
+@torch.no_grad()
 def predict(model, loader, device="cpu"):
-    """-> (y_true, y_pred) como arrays de índices de clase, con el modelo en eval()."""
-    model.to(device).eval()            # dropout apagado; BN con sus medias acumuladas
+    model.to(device).eval()
     ys, preds = [], []
     for x, y in loader:
-        preds.append(model(x.to(device)).argmax(dim=1).cpu())   # clase con el logit más alto
+        preds.append(model(x.to(device)).argmax(dim=1).cpu())
         ys.append(y)
     return torch.cat(ys).numpy(), torch.cat(preds).numpy()
 
@@ -39,13 +38,12 @@ def predict(model, loader, device="cpu"):
 def compute_metrics(y_true, y_pred):
     f1 = f1_score(y_true, y_pred, labels=LABELS, average=None, zero_division=0)
     return {"accuracy": float(accuracy_score(y_true, y_pred)),
-            "f1_macro": float(f1.mean()),                  # media simple: todas las clases pesan igual
+            "f1_macro": float(f1.mean()),
             "f1_por_clase": {c: round(float(v), 4) for c, v in zip(CLASSES, f1)},
             "n": int(len(y_true))}
 
 
 def top_confusions(y_true, y_pred, k=5):
-    """Las k celdas fuera de la diagonal más altas: [(real, predicha, fracción de la fila)]."""
     cm = confusion_matrix(y_true, y_pred, labels=LABELS, normalize="true")
     np.fill_diagonal(cm, 0)
     order = np.argsort(cm, axis=None)[::-1][:k]
@@ -65,13 +63,12 @@ def plot_confusion(y_true, y_pred, path, title=""):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    # normalize="true": cada fila (clase real) suma 1 -> la diagonal es el recall de cada clase
     cm = confusion_matrix(y_true, y_pred, labels=LABELS, normalize="true")
     fig, ax = plt.subplots(figsize=(7, 6))
     im = ax.imshow(cm, cmap="Blues", vmin=0, vmax=1)
     for i in LABELS:
         for j in LABELS:
-            if cm[i, j] >= 0.005:          # los ceros se dejan en blanco para que se lean los errores
+            if cm[i, j] >= 0.005:
                 ax.text(j, i, f"{cm[i, j]:.2f}", ha="center", va="center", fontsize=8,
                         color="white" if cm[i, j] > 0.5 else "black")
     ax.set_xticks(LABELS, CLASSES, rotation=45, ha="right")
@@ -86,7 +83,6 @@ def plot_confusion(y_true, y_pred, path, title=""):
 
 
 def evaluate(ckpt, split="val", force=False, batch_size=256, num_workers=2, splits_csv=SPLITS_CSV):
-    """Evalúa ckpt sobre split y escribe los tres ficheros en su carpeta. Devuelve el dict de métricas."""
     ckpt = Path(ckpt)
     out = ckpt.parent
     if split == "test" and (out / "metrics_test.json").exists() and not force:

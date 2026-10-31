@@ -19,7 +19,7 @@ def test_forma_salida(use_bn, use_dropout):
 
 
 def test_numero_parametros():
-    assert 2.2e6 < count_params(build_model()) < 2.6e6   # el plan habla de unos 2,4 M
+    assert 2.2e6 < count_params(build_model()) < 2.6e6
 
 
 def test_sin_bn_no_tiene_batchnorm():
@@ -44,7 +44,7 @@ def test_resnet18():
         assert model(batch()).shape == (2, len(CLASSES))
     convs = [m for m in model.modules() if isinstance(m, nn.Conv2d)]
     assert model.gradcam_layer is convs[-1] and model.gradcam_layer.out_channels == 512
-    assert 11e6 < count_params(model) < 11.5e6           # ResNet18 con fc de 9 salidas: ≈ 11,2 M
+    assert 11e6 < count_params(model) < 11.5e6
 
 
 def test_guardar_y_cargar_resnet18(tmp_path):
@@ -52,7 +52,7 @@ def test_guardar_y_cargar_resnet18(tmp_path):
     model = build_model(arch="resnet18").eval()
     path = tmp_path / "best.pt"
     save_checkpoint(path, model, {"arch": "resnet18", "pretrained": True})
-    loaded, _ = load_checkpoint(path)                    # no descarga nada: pretrained no está en MODEL_KEYS
+    loaded, _ = load_checkpoint(path)
     x = batch()
     with torch.no_grad():
         assert torch.equal(model(x), loaded(x))
@@ -79,7 +79,6 @@ def test_guardar_y_cargar(tmp_path):
 
 
 def test_por_defecto_es_la_red_original():
-    """Las opciones de la búsqueda de hiperparámetros no cambian la red por defecto (ni su nº de parámetros)."""
     a = build_model(channels=(32, 64, 128, 256, 256), fc_hidden=0, activation="relu")
     assert count_params(a) == count_params(build_model()) == 2_357_673
 

@@ -1,6 +1,3 @@
-# Referencia: ResNet18 preentrenado en ImageNet, con la capa fc cambiada a 9 clases (plan, 3.8).
-# Al partir de pesos ya entrenados se reajusta con un lr 10 veces menor que el de la CNN propia.
-# En Kaggle hay que activar Internet en el notebook para descargar los pesos.
 name: resnet18
 arch: resnet18
 pretrained: true

@@ -13,12 +13,11 @@ MOCK = {"data": "mock", "epochs": 1, "mock_n": 16, "batch_size": 8, "num_workers
 
 
 def fake_evaluate(ckpt):
-    """Sustituye a evaluate.py (que necesita los datos reales) con unas métricas fijas."""
     ckpt.parent.joinpath("metrics_val.json").write_text(json.dumps({"accuracy": 0.9, "f1_macro": 0.9, "n": 10}))
 
 
 def test_al_menos_5_configs_con_nombre_del_fichero():
-    assert len(SEARCH) >= 5                           # mínimo del enunciado
+    assert len(SEARCH) >= 5
     assert all(load_config(p)["name"] == p.stem for p in SEARCH)
 
 
@@ -46,9 +45,9 @@ def test_corre_con_el_mock_y_se_salta_lo_hecho(tmp_path):
     paths = SEARCH[:2]
     assert len(run(paths, tmp_path, fake_evaluate, **MOCK)) == 2
     for p in paths:
-        model, cfg = load_checkpoint(tmp_path / p.stem / "best.pt")   # la arquitectura se reconstruye del cfg
+        model, cfg = load_checkpoint(tmp_path / p.stem / "best.pt")
         assert cfg["name"] == p.stem
-    assert run(paths, tmp_path, fake_evaluate, **MOCK) == []           # al relanzar no repite nada
+    assert run(paths, tmp_path, fake_evaluate, **MOCK) == []
 
 
 def test_resumen(tmp_path):

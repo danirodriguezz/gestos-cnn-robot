@@ -22,12 +22,6 @@ from src.model import load_checkpoint
 
 
 class GradCAM:
-    """Engancha hooks a model.gradcam_layer mientras dura el with y calcula mapas para cualquier clase.
-
-        with GradCAM(model) as cam:
-            maps = cam(x, classes)      # x (B, 3, H, W) normalizado -> (B, H, W) en [0, 1]
-    """
-
     def __init__(self, model):
         self.model = model
         self.acts = self.grads = self.handle = None
@@ -37,32 +31,28 @@ class GradCAM:
         return self
 
     def __exit__(self, *exc):
-        self.handle.remove()                    # el modelo queda como estaba, sin hooks
+        self.handle.remove()
 
     def _save_activations(self, module, inputs, output):
-        # copia: sin BN, el ReLU(inplace=True) siguiente sobrescribiría la salida de la conv
         self.acts = output.detach().clone()
-        output.register_hook(self._save_gradients)      # se ejecuta en el backward
+        output.register_hook(self._save_gradients)
 
     def _save_gradients(self, grad):
         self.grads = grad.detach()
 
     def __call__(self, x, classes):
-        self.model.eval()                       # sin dropout; BN con sus medias (y sin no_grad: hacen falta gradientes)
+        self.model.eval()
         self.model.zero_grad()
         logits = self.model(x)
-        # logit y no softmax: el softmax satura con confianza alta y sus gradientes se anulan.
-        # Se suman los logits elegidos: en eval() cada imagen solo depende de su propio logit
         logits.gather(1, classes.view(-1, 1)).sum().backward()
-        alpha = self.grads.mean(dim=(2, 3), keepdim=True)              # (B, K, 1, 1): peso de cada mapa
-        cam = F.relu((alpha * self.acts).sum(dim=1, keepdim=True))     # (B, 1, h, w): solo lo que suma a favor
+        alpha = self.grads.mean(dim=(2, 3), keepdim=True)
+        cam = F.relu((alpha * self.acts).sum(dim=1, keepdim=True))
         cam = F.interpolate(cam, size=x.shape[-2:], mode="bilinear", align_corners=False)[:, 0]
-        return (cam / cam.amax(dim=(1, 2), keepdim=True).clamp_min(1e-8)).cpu()   # [0, 1] por imagen
+        return (cam / cam.amax(dim=(1, 2), keepdim=True).clamp_min(1e-8)).cpu()
 
 
 @torch.no_grad()
 def predict_proba(model, loader, device):
-    """-> (y_true, probs (N, 9)) en el orden del loader (val no se baraja)."""
     model.eval()
     ys, probs = [], []
     for x, y in loader:
@@ -72,21 +62,19 @@ def predict_proba(model, loader, device):
 
 
 def pick_examples(y_true, probs, n_errors=8, seed=SEED):
-    """-> (aciertos, errores): índices de un acierto al azar por clase y de los errores más seguros."""
     pred, conf = probs.argmax(axis=1), probs.max(axis=1)
     rng = np.random.default_rng(seed)
     hits = []
     for c in range(len(CLASSES)):
         ok = np.flatnonzero((y_true == c) & (pred == c))
-        if len(ok):                             # una clase sin aciertos (modelo malo) simplemente no sale
+        if len(ok):
             hits.append(int(rng.choice(ok)))
     wrong = np.flatnonzero(pred != y_true)
-    errors = wrong[np.argsort(-conf[wrong], kind="stable")][:n_errors]   # más confianza primero
+    errors = wrong[np.argsort(-conf[wrong], kind="stable")][:n_errors]
     return hits, [int(i) for i in errors]
 
 
 def plot_panels(examples, path, per_row, title):
-    """examples: lista de ejemplos; cada uno, lista de paneles (imagen, mapa o None, título)."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -111,14 +99,13 @@ def plot_panels(examples, path, per_row, title):
 
 
 def make_figures(ckpt, n_errors=8, num_workers=2, splits_csv=SPLITS_CSV):
-    """Calcula los mapas sobre val y guarda las dos figuras junto a ckpt. Devuelve sus rutas."""
     ckpt = Path(ckpt)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, cfg = load_checkpoint(ckpt)
     model.to(device)
     stats = load_stats(splits_csv)
     loader = get_dataloaders(256, augment=False, num_workers=num_workers, splits_csv=splits_csv)["val"]
-    ds = loader.dataset                         # val sin barajar: el índice i del loader es ds[i]
+    ds = loader.dataset
     y_true, probs = predict_proba(model, loader, device)
     pred = probs.argmax(axis=1)
     hits, errors = pick_examples(y_true, probs, n_errors)

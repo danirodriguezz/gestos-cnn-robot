@@ -12,7 +12,7 @@ import math
 import random
 
 import matplotlib
-matplotlib.use("Agg")                           # sin ventana: solo se guarda a fichero
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
@@ -32,7 +32,6 @@ def load_image(gesture, image_id):
 
 
 def sample_images(n, rng):
-    """n imágenes repartidas por turnos entre los gestos; en la primera vuelta, una con dos manos de cada uno."""
     anns = {g: json.loads((RAW_DIR / "annotations" / f"{g}.json").read_text()) for g in GESTURES}
     samples, chosen = [], set()
     for i in range(n):
@@ -56,7 +55,6 @@ def plot_boxes(samples, path, cols=5):
         W, H = img.size
         ax.imshow(img)
         for (x, y, w, h), label in zip(ann["bboxes"], ann["labels"]):
-            # [x, y, w, h] normalizados con (x, y) = esquina superior izquierda -> píxeles
             ax.add_patch(Rectangle((x * W, y * H), w * W, h * H,
                                    fill=False, edgecolor=color_of(label), linewidth=2))
             ax.text(x * W, y * H - 4, label, color=color_of(label), fontsize=7, fontweight="bold")
@@ -87,7 +85,7 @@ def main():
     parser.add_argument("--n", type=int, default=20, help="número de imágenes de la muestra")
     args = parser.parse_args()
 
-    samples = sample_images(args.n, random.Random(SEED))   # misma semilla -> misma muestra para los dos
+    samples = sample_images(args.n, random.Random(SEED))
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     plot_boxes(samples, FIG_DIR / "cajas_muestra.png")
     plot_crops(samples, FIG_DIR / "recortes_muestra.png")

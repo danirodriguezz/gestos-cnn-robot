@@ -1,28 +1,18 @@
 \begin{abstract}
 \noindent
-Este trabajo estudia si una red convolucional pequeña, entrenada desde cero, puede reconocer con
-fiabilidad un vocabulario de gestos de la mano pensado para dar órdenes a un robot.
-Partimos de un subconjunto de HaGRID con ocho gestos (\cls{stop}, \cls{like}, \cls{dislike},
-\cls{one}, \cls{peace}, \cls{fist}, \cls{palm} y \cls{call}) y una clase nula
-(\cls{no\_gesture}) que deja el robot quieto. Clasificamos recortes de la mano de
-$128\times128$\,px y dividimos los datos \emph{por persona}, de modo que las \PersonasTest{}
-personas de test no aparecen en entrenamiento ni en validación.
-La red propuesta, GestureCNN, tiene cinco bloques convolucionales con normalización por lotes,
-\emph{dropout} y \emph{global average pooling} (\ParamsFinal{} parámetros). Tras una búsqueda
-manual de \NConfigsBusqueda{} configuraciones, el modelo final se entrena con lotes de 32. En
-test alcanza una
-exactitud del \AccTestFinal{} (IC del 95\,\% por \emph{bootstrap} por persona: \AccTestFinalIC)
-y una F1 macro del \FoneTestFinal, muy por encima del objetivo del 85\,\%.
-Un estudio de ablación con dos semillas indica que la normalización por lotes es el componente
-decisivo, mientras que el \emph{dropout} y el aumento de datos tienen efectos pequeños sobre la
-exactitud con este conjunto de datos; la búsqueda de hiperparámetros muestra también una
-sensibilidad baja a la tasa de aprendizaje, al lote, a la capacidad y a la activación. Un ResNet18 preentrenado en ImageNet sirve de referencia
-(\AccTestResnet{} en test) con \RatioParams{} veces más parámetros. Los mapas Grad-CAM muestran que la red
-atiende a los dedos que distinguen cada gesto, y los errores restantes se concentran en pares
-visualmente próximos (\cls{stop}/\cls{palm}, \cls{like}/\cls{call}) y en ejemplos con ruido de
-etiqueta. Por último, se describe el diseño de una demo en tiempo real con ROS\,2 y
-\emph{turtlesim}.
+Entrenamos desde cero una red convolucional, GestureCNN, que clasifica recortes de la mano de
+$128\times128$\,px en ocho gestos de HaGRID y una clase nula (\cls{no\_gesture}), pensados como
+órdenes para un robot. Los datos se dividen \emph{por persona}, de modo que las \PersonasTest{}
+personas de test no aparecen ni en entrenamiento ni en validación. La red tiene cinco bloques
+convolucionales con normalización por lotes, \emph{dropout} y \emph{global average pooling}
+(\ParamsFinal{} parámetros). Tras una búsqueda manual de \NConfigsBusqueda{} configuraciones de
+hiperparámetros, el modelo final se entrena con lotes de 32 y alcanza en test una exactitud del
+\AccTestFinal{} (IC del 95\,\%: \AccTestFinalIC), muy por encima del objetivo del 85\,\%. La
+búsqueda y un estudio de ablación con dos semillas indican que el resultado es poco sensible a los
+hiperparámetros y que la normalización por lotes es el único componente con un efecto claro. Un
+ResNet18 preentrenado (\AccTestResnet{} en test) no es significativamente mejor, y Grad-CAM
+muestra que la red se fija en los dedos que distinguen cada gesto.
 
 \medskip\noindent\textbf{Palabras clave:} reconocimiento de gestos, redes convolucionales,
-interacción persona-robot, HaGRID, ablación, Grad-CAM.
+búsqueda de hiperparámetros, HaGRID, ablación, Grad-CAM.
 \end{abstract}

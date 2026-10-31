@@ -1,3 +1,2 @@
-# Búsqueda de hiperparámetros: completo con un solo cambio. La mitad de filtros en cada bloque.
 name: hp_filtros_mitad
 channels: [16, 32, 64, 128, 128]

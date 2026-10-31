@@ -19,25 +19,22 @@ from PIL import Image
 from src.common import CLASSES, CROPS_DIR, DATA_DIR, RESULTS, crop_hand
 from src.download import GESTURES, RAW_DIR
 
-CROPS_CSV = DATA_DIR / "crops.csv"     # path relativo a DATA_DIR, con "/" para que valga en Kaggle
+CROPS_CSV = DATA_DIR / "crops.csv"
 TABLES_DIR = RESULTS / "tablas"
-JPEG_QUALITY = 95                      # alta: el recorte ya pierde detalle al ampliarse
+JPEG_QUALITY = 95
 
 
 def save_crop(crop, path):
-    """Guarda en un temporal y renombra: si el script se corta, nunca queda un JPEG a medias."""
     tmp = path.with_suffix(".tmp")
     crop.save(tmp, format="JPEG", quality=JPEG_QUALITY)
     tmp.replace(path)
 
 
 def crop_image(gesture, image_id, ann):
-    """Recorta las manos de una imagen (las que falten) y devuelve una fila del índice por mano."""
-    img = Image.open(RAW_DIR / "images" / gesture / f"{image_id}.jpg")   # perezoso: aún no decodifica
+    img = Image.open(RAW_DIR / "images" / gesture / f"{image_id}.jpg")
     W, H = img.size
     rows, rgb = [], None
     for k, (box, label) in enumerate(zip(ann["bboxes"], ann["labels"])):
-        # la carpeta sale de la etiqueta, no de la carpeta de origen (una foto de fist es no_gesture)
         path = CROPS_DIR / label / f"{image_id}_{k}.jpg"
         if not path.exists():
             if rgb is None:
@@ -45,7 +42,7 @@ def crop_image(gesture, image_id, ann):
             save_crop(crop_hand(rgb, box), path)
         rows.append({"path": path.relative_to(DATA_DIR).as_posix(), "label": label,
                      "user_id": ann["user_id"], "image_id": image_id, "hand_idx": k,
-                     "box_px": round(max(box[2] * W, box[3] * H), 1)})   # lado de la caja sin margen
+                     "box_px": round(max(box[2] * W, box[3] * H), 1)})
     return rows
 
 
@@ -59,7 +56,7 @@ def build_crops():
             rows.extend(crop_image(g, image_id, ann[image_id]))
         print(f"{g}: {len(ann)} imágenes recortadas")
     df = pd.DataFrame(rows)
-    df.to_csv(CROPS_CSV, index=False)    # se escribe al final: si existe, el recorte terminó
+    df.to_csv(CROPS_CSV, index=False)
     return df
 
 
