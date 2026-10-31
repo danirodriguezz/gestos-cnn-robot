@@ -29,7 +29,7 @@ La red debe incluir convolución, \emph{pooling}, normalización por lotes y \em
 entrenamiento debe usar parada anticipada sobre la pérdida de validación con restauración de los
 mejores pesos. Además, nos propusimos analizar el modelo con una matriz de confusión, mapas
 Grad-CAM y un estudio de ablación (con y sin \emph{dropout}, normalización por lotes y aumento
-de datos). Como extensiones opcionales, el plan incluía comparar con un ResNet18 preentrenado y
+de datos), y documentar una búsqueda manual de hiperparámetros. Como extensiones opcionales, el plan incluía comparar con un ResNet18 preentrenado y
 construir una demo en tiempo real que controle un robot simulado en ROS\,2.
 
 \paragraph{Contribuciones.}
@@ -41,8 +41,9 @@ construir una demo en tiempo real que controle un robot simulado en ROS\,2.
   \item GestureCNN, una red de \ParamsFinal{} parámetros que alcanza un \AccTestFinal{} de
     exactitud en test, con un intervalo de confianza que tiene en cuenta la dependencia entre
     imágenes de una misma persona (\cref{sec:resultados}).
-  \item Un estudio de ablación con dos semillas y pruebas de McNemar pareadas, que separa los
-    efectos reales de la variación entre ejecuciones (\cref{sec:ablacion}).
+  \item Una búsqueda manual de hiperparámetros (\cref{sec:busqueda}) y un estudio de ablación
+    con dos semillas y pruebas de McNemar pareadas, que separa los efectos reales de la variación
+    entre ejecuciones (\cref{sec:ablacion}).
   \item Una comparación con ResNet18 que incluye el coste computacional (parámetros, operaciones y
     latencia) y un análisis cualitativo de los errores con Grad-CAM.
 \end{itemize}

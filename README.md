@@ -40,10 +40,23 @@ repositorio: **no** hace falta ejecutar `src.make_splits`, que solo se usa para 
     uv run python -u -m src.run_experiments 2>&1 | tee results/ablacion.log                  # ablación, semilla 42
     uv run python -u -m src.run_experiments --seed 43 2>&1 | tee results/ablacion_s43.log    # segunda semilla
     uv run python -u -m src.run_experiments configs/resnet18.yaml 2>&1 | tee results/resnet18.log
-    cp -r results/completo results/final                                                     # modelo final
 
 Cada experimento escribe `best.pt`, `history.csv` y `config.yaml` en `results/<nombre>/`.
 Para una prueba rápida sin GPU: `--data mock --epochs 1`. Los pesos (`*.pt`) no se suben a git.
+
+**Búsqueda de hiperparámetros** (`configs/busqueda/`, 9 configs: `completo` con un solo cambio de lr,
+lote, filtros, nº de bloques, capa FC o activación). Entrena, evalúa en validación y resume:
+
+    bash scripts/busqueda.sh       # unas 3 h en la 1660 Ti; con el portátil enchufado
+
+El script impide la suspensión mientras dura y guarda el log en `results/busqueda.log`. Si se corta,
+al relanzarlo sigue por donde iba. Resultado: `results/tablas/busqueda.csv` y
+`results/figures/busqueda_curvas.png` (rehacerlos sin entrenar: `uv run python -m src.busqueda --solo-resumen`).
+
+**Modelo final**: `hp_batch_32`, la config con mejor exactitud de validación en la búsqueda (antes era
+`completo`; el informe explica el cambio y compara los dos en test):
+
+    mkdir -p results/final && cp results/hp_batch_32/* results/final/
 
 ### 3. Evaluación y figuras
 

@@ -1,0 +1,22 @@
+              precision    recall  f1-score   support
+
+        stop      0.974     0.989     0.981       262
+        like      0.996     0.988     0.992       260
+     dislike      0.996     0.989     0.992       267
+         one      0.996     0.996     0.996       266
+       peace      0.985     0.992     0.989       266
+        fist      1.000     1.000     1.000       261
+        palm      0.989     0.977     0.983       264
+        call      0.989     1.000     0.994       264
+  no_gesture      0.989     0.981     0.985       264
+
+    accuracy                          0.990      2374
+   macro avg      0.990     0.990     0.990      2374
+weighted avg      0.990     0.990     0.990      2374
+
+Confusiones más frecuentes (real -> predicha, % de la clase real):
+  palm        -> stop          2.3%
+  stop        -> palm          1.1%
+  like        -> call          0.8%
+  no_gesture  -> peace         0.8%
+  dislike     -> no_gesture    0.7%

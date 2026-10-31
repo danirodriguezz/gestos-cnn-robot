@@ -1,12 +1,20 @@
-name: completo
+name: hp_batch_32
 arch: gesturecnn
 pretrained: false
 use_bn: true
 use_dropout: true
+channels:
+- 32
+- 64
+- 128
+- 256
+- 256
+fc_hidden: 0
+activation: relu
 augment: true
 lr: 0.001
 weight_decay: 0.0001
-batch_size: 64
+batch_size: 32
 epochs: 50
 patience: 6
 scheduler: true

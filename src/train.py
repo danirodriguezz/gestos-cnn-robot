@@ -30,6 +30,9 @@ DEFAULTS = {
     "pretrained": False,        # solo resnet18: parte de los pesos de ImageNet (necesita internet)
     "use_bn": True,
     "use_dropout": True,
+    "channels": [32, 64, 128, 256, 256],   # filtros por bloque; el nº de bloques es la longitud de la lista
+    "fc_hidden": 0,             # neuronas de una capa FC oculta antes de la salida (0 = sin capa oculta)
+    "activation": "relu",       # relu | leaky_relu | elu
     "augment": True,            # se pasa a get_dataloaders
     "lr": 1e-3,
     "weight_decay": 1e-4,

@@ -76,3 +76,19 @@ def test_guardar_y_cargar(tmp_path):
     x = batch()
     with torch.no_grad():
         assert torch.equal(model(x), loaded(x))
+
+
+def test_por_defecto_es_la_red_original():
+    """Las opciones de la búsqueda de hiperparámetros no cambian la red por defecto (ni su nº de parámetros)."""
+    a = build_model(channels=(32, 64, 128, 256, 256), fc_hidden=0, activation="relu")
+    assert count_params(a) == count_params(build_model()) == 2_357_673
+
+
+def test_opciones_de_la_busqueda():
+    model = build_model(channels=(32, 64, 128, 256), fc_hidden=128, activation="elu")
+    assert len(model.features) == 4
+    convs = [m for m in model.modules() if isinstance(m, nn.Conv2d)]
+    assert model.gradcam_layer is convs[-1]
+    assert any(isinstance(m, nn.ELU) for m in model.modules()) and not any(isinstance(m, nn.ReLU) for m in model.modules())
+    with pytest.raises(ValueError):
+        build_model(activation="tanhh")

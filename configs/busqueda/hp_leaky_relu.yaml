@@ -1,0 +1,3 @@
+# Búsqueda de hiperparámetros: completo con un solo cambio. Activación LeakyReLU (pendiente 0,1) en lugar de ReLU.
+name: hp_leaky_relu
+activation: leaky_relu

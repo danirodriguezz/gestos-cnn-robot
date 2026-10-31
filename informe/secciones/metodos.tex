@@ -98,14 +98,18 @@ multiplicaría de nuevo.
 Las variantes de la ablación se obtienen con dos interruptores de la misma clase: \emph{sin BN}
 sustituye cada capa BN por la identidad (las convoluciones conservan su sesgo) y \emph{sin
 dropout} pone a cero todas las probabilidades de \code{Dropout2d} y \code{Dropout}. Así las
-variantes comparten exactamente el resto de la arquitectura.
+variantes comparten exactamente el resto de la arquitectura. Para la búsqueda de hiperparámetros
+(\cref{sec:busqueda-metodo}), la misma clase admite además otra lista de canales (que fija también
+el número de bloques), una capa oculta opcional en la cabeza y otra función de activación; con los
+valores por defecto la red es exactamente la descrita.
 
 \subsection{Entrenamiento}
 
 Todos los modelos se entrenan con entropía cruzada (sin pesos de clase, porque las clases están
 equilibradas) y Adam \citep{kingma2015adam} con tasa de aprendizaje inicial $10^{-3}$,
-\emph{weight decay} $10^{-4}$ y lotes de 64 imágenes (el último lote incompleto de cada época se
-descarta para no tener lotes de una imagen en BN). La tasa de aprendizaje se divide por dos
+\emph{weight decay} $10^{-4}$ y lotes de 64 imágenes, salvo el modelo final, que usa lotes de 32
+(\cref{sec:busqueda-metodo}). El último lote incompleto de cada época se descarta para no tener
+lotes de una imagen en BN. La tasa de aprendizaje se divide por dos
 cuando la pérdida de validación no mejora en 3 épocas (\code{ReduceLROnPlateau}). La parada
 anticipada \citep{prechelt1998early} detiene el entrenamiento tras 6 épocas sin mejorar la pérdida
 de validación, con un máximo de 50 épocas, y restaura los pesos de la mejor época, que son los que
@@ -122,20 +126,50 @@ para no destruir los rasgos preentrenados. La entrada es la misma de $128\times1
 con nuestras estadísticas y no con las de ImageNet; al reajustar todas las capas, la red se adapta
 a esa diferencia de escala.
 
+\subsection{Búsqueda de hiperparámetros}
+\label{sec:busqueda-metodo}
+
+Partiendo del modelo completo (tasa de aprendizaje $10^{-3}$, lotes de 64, cinco bloques de 32 a
+256 filtros, sin capa oculta en la cabeza y ReLU), hicimos una búsqueda manual en la que cada
+configuración cambia \emph{un único} hiperparámetro y deja fijos todos los demás, incluidas la
+semilla, la partición y la parada anticipada. Probamos \NConfigsBusqueda{} configuraciones:
+\begin{itemize}
+  \item \textbf{Tasa de aprendizaje}: $3\cdot10^{-4}$ y $3\cdot10^{-3}$, un factor de unas tres
+    veces por debajo y por encima de la inicial.
+  \item \textbf{Tamaño de lote}: 32 y 128. Con la misma tasa de aprendizaje, un lote menor da más
+    actualizaciones por época y un gradiente más ruidoso.
+  \item \textbf{Capacidad}: la mitad de filtros en cada bloque (de 16 a 128,
+    \ParamsFiltrosMitad{} parámetros); cuatro bloques en lugar de cinco (se quita el último, de
+    modo que el mapa final es de $8\times8$; \ParamsCuatroBloques{} parámetros); y una capa oculta
+    de 128 neuronas entre el \emph{global average pooling} y la salida.
+  \item \textbf{Activación}: ELU \citep{clevert2016elu} y LeakyReLU con pendiente negativa 0,1, en
+    lugar de ReLU.
+\end{itemize}
+Cada configuración se entrenó una vez y se evaluó solo en validación. El criterio de elección,
+fijado de antemano, es la exactitud de validación. Cambiar un factor cada vez permite atribuir
+cada diferencia a un solo hiperparámetro y cuesta una ejecución por valor probado (unos 20 minutos
+en nuestra GPU), mientras que una rejilla completa con estos valores necesitaría cientos. El precio
+es que no se exploran las interacciones entre hiperparámetros.
+
 \subsection{Protocolo de evaluación}
 \label{sec:protocolo}
 
 \paragraph{Selección del modelo.}
-Todas las decisiones se tomaron con validación. El modelo final es la variante \emph{completa}
-(BN, \emph{dropout} y aumento de datos) entrenada con la semilla 42: en la primera ablación, la
-única disponible cuando se tomó la decisión, obtuvo la menor pérdida de validación y la mayor
-exactitud y F1 macro de validación (columna s42 de la \cref{tab:semillas}). No se hizo una
-búsqueda de hiperparámetros, porque la configuración inicial ya superaba ampliamente el objetivo.
-Solo después de fijar el modelo final se evaluó el conjunto de test, una vez por modelo. La
-segunda semilla se entrenó después; aunque en ella la variante sin \emph{dropout} queda
-ligeramente por delante en validación, no cambiamos el modelo final: la diferencia es del orden
-de la variación entre ejecuciones (\cref{sec:ablacion}), y cambiar de modelo después de haber
-mirado el test invalidaría su papel de estimación independiente.
+Todas las decisiones se tomaron con validación, pero el modelo final se eligió en dos fases, y lo
+indicamos explícitamente porque afecta a la lectura del test. En la primera fase, el modelo final
+era la variante \emph{completa} entrenada con la semilla 42. En la primera ablación, la única
+disponible cuando se tomó la decisión, obtuvo la menor pérdida y la mayor exactitud de validación
+(columna s42 de la \cref{tab:semillas}). Con él, con las variantes y con ResNet18 se evaluó
+el test una vez por modelo. En la segunda fase hicimos la búsqueda de hiperparámetros
+(\cref{sec:busqueda-metodo}), solo con validación. La configuración con lotes de 32 obtuvo la
+mayor exactitud de validación y pasó a ser el modelo final. La decisión se tomó antes de evaluar
+esta configuración en test, que también se evaluó una sola vez. Aun así, cuando se tomó, el
+conjunto de test ya se había mirado con el modelo anterior. Por eso presentamos en test los dos
+modelos, el final y el completo, y los comparamos (\cref{sec:test}).
+
+La segunda semilla de la ablación se entrenó antes de la búsqueda. Aunque en ella la variante sin
+\emph{dropout} queda ligeramente por delante en validación, no la elegimos: la diferencia es del
+orden de la variación entre ejecuciones (\cref{sec:ablacion}).
 
 \paragraph{Métricas.}
 Reportamos la exactitud, la F1 macro (media sin ponderar de las F1 por clase) y la precisión,

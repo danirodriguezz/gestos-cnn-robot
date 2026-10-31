@@ -1,0 +1,24 @@
+name: hp_batch_128
+arch: gesturecnn
+pretrained: false
+use_bn: true
+use_dropout: true
+channels:
+- 32
+- 64
+- 128
+- 256
+- 256
+fc_hidden: 0
+activation: relu
+augment: true
+lr: 0.001
+weight_decay: 0.0001
+batch_size: 128
+epochs: 50
+patience: 6
+scheduler: true
+num_workers: 2
+seed: 42
+data: real
+mock_n: 512
