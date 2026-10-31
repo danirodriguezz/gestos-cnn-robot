@@ -35,7 +35,7 @@ def test_forma_del_contrato(loaders):
 def test_tamanos_como_splits_csv(loaders):
     for split, loader in loaders.items():
         assert len(loader.dataset) == (splits["split"] == split).sum()
-    assert len(loaders["train"]) == len(loaders["train"].dataset) // 16      # drop_last solo en train
+    assert len(loaders["train"]) == len(loaders["train"].dataset) // 16
     assert len(loaders["val"]) == -(-len(loaders["val"].dataset) // 16)
 
 
@@ -57,14 +57,12 @@ def test_augment_false_es_determinista():
 
 
 def test_normalizacion():
-    """Con stats.json de train, un lote sin aumentar queda con media ~0 y std ~1 por canal."""
     x, _ = next(iter(get_dataloaders(batch_size=256, augment=False, num_workers=0)["train"]))
     assert x.mean(dim=(0, 2, 3)).abs().max() < 0.2
     assert (x.std(dim=(0, 2, 3)) - 1).abs().max() < 0.2
 
 
 def test_rutas_relativas_a_splits_csv(tmp_path):
-    """Una copia de data/ en otro sitio (como en Kaggle) funciona pasando solo splits_csv."""
     splits.groupby("split").head(4).to_csv(tmp_path / "splits.csv", index=False)
     (tmp_path / "stats.json").write_text(STATS_JSON.read_text())
     (tmp_path / "crops").symlink_to(CROPS_DIR)

@@ -42,23 +42,22 @@ def test_quita_los_hooks():
 
 @pytest.mark.parametrize("use_bn", [True, False])
 def test_gesturecnn(use_bn):
-    """Con el modelo de Carlos el mapa sale de 8x8 ampliado; sin BN, el ReLU in-place no estropea las activaciones."""
     model = build_model(use_bn=use_bn)
     with GradCAM(model) as cam:
         maps = cam(batch(2), torch.tensor([0, 5]))
         assert cam.acts.shape[-2:] == (8, 8)
-        assert cam.acts.min() < 0                    # salida cruda de la conv, antes del ReLU
+        assert cam.acts.min() < 0
     assert maps.shape == (2, IMG_SIZE, IMG_SIZE) and maps.max() <= 1
 
 
 def test_pick_examples():
     y_true = np.array([0, 0, 1, 1, 2])
     probs = np.full((5, len(CLASSES)), 0.01)
-    probs[0, 0] = 0.9                                # acierto de stop
-    probs[1, 1] = 0.6                                # error: stop -> like (0,6)
-    probs[2, 1] = 0.8                                # acierto de like
-    probs[3, 0] = 0.95                               # error: like -> stop (0,95), el más seguro
-    probs[4, 2] = 0.7                                # acierto de dislike
+    probs[0, 0] = 0.9
+    probs[1, 1] = 0.6
+    probs[2, 1] = 0.8
+    probs[3, 0] = 0.95
+    probs[4, 2] = 0.7
     hits, errors = pick_examples(y_true, probs)
     assert sorted(hits) == [0, 2, 4] and errors == [3, 1]
 
@@ -74,5 +73,5 @@ def test_punta_a_punta(tmp_path):
     save_checkpoint(ckpt, build_model(), {"name": "exp", "arch": "gesturecnn", "use_bn": True, "use_dropout": True})
 
     paths = make_figures(ckpt, n_errors=4, num_workers=0, splits_csv=data / "splits.csv")
-    assert ckpt.parent / "gradcam_errores_val.png" in paths   # sin entrenar, seguro que hay errores
+    assert ckpt.parent / "gradcam_errores_val.png" in paths
     assert all(p.stat().st_size > 0 for p in paths)

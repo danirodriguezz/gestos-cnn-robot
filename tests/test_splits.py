@@ -34,7 +34,6 @@ def test_proporciones_70_15_15():
 
 
 def test_clases_estratificadas():
-    """Cada clase pesa en cada partición lo mismo que en el total (±1,5 puntos)."""
     total = df["label"].value_counts(normalize=True)
     for split in SPLITS:
         part = df.loc[df["split"] == split, "label"].value_counts(normalize=True)

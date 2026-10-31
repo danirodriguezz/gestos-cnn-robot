@@ -7,7 +7,6 @@ from src.run_experiments import ABLATION, CONFIGS_DIR, run
 from src.train import load_config
 
 CONFIGS = sorted(CONFIGS_DIR.glob("*.yaml"))
-# pretrained=False: la prueba no descarga los pesos de ImageNet
 MOCK = {"data": "mock", "epochs": 1, "mock_n": 16, "batch_size": 8, "num_workers": 0, "pretrained": False}
 
 
@@ -30,7 +29,6 @@ def test_ablacion_cambia_un_solo_componente():
 
 
 def test_las_5_configs_corren_1_epoca_con_el_mock(tmp_path):
-    """Criterio de «hecho» de C5."""
     rows = run(CONFIGS, results_dir=tmp_path, **MOCK)
     assert [r["name"] for r in rows] == [p.stem for p in CONFIGS]
     for r in rows:

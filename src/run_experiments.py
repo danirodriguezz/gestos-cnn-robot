@@ -21,18 +21,12 @@ ABLATION = [CONFIGS_DIR / f"{name}.yaml" for name in ("completo", "sin_dropout",
 
 
 def summarize(cfg, history):
-    """Fila del resumen: épocas entrenadas y métricas de la época con menor val_loss (la de best.pt)."""
     best = min(history, key=lambda row: row["val_loss"])
     return {"name": cfg["name"], "epochs": len(history), "best_epoch": best["epoch"],
             "val_loss": best["val_loss"], "val_acc": best["val_acc"]}
 
 
 def run(paths, results_dir=RESULTS, **overrides):
-    """Entrena cada config de paths, en orden. Devuelve una fila de resumen por experimento.
-
-    Con seed en overrides, el nombre lleva el sufijo _s<seed> para no pisar la repetición con SEED.
-    """
-    # se cargan todas antes de empezar: una errata en la última no debe descubrirse tras horas de GPU
     cfgs = [load_config(path, **overrides) for path in paths]
     if overrides.get("seed") is not None:
         for cfg in cfgs:

@@ -1,67 +1,42 @@
 \section{Datos}
 \label{sec:datos}
 
-\subsection{Subconjunto de HaGRID y vocabulario de órdenes}
+Usamos el subconjunto público \code{hagrid-sample-30k-384p} \citep{mills_hagridsample} de HaGRID,
+con imágenes de 384\,px y las anotaciones originales: la caja de cada mano, su etiqueta y un
+identificador anónimo de la persona (\code{user\_id}). Elegimos los ocho gestos de la
+\cref{tab:datos}, que cubren las órdenes básicas de un robot móvil con pinza. Sus
+\NImagenesOrig{} imágenes contienen \NManos{} manos de \NPersonasOrig{} personas. La clase nula
+está formada por las \NoGestureOrig{} \emph{segundas manos} de esas mismas imágenes, que HaGRID
+etiqueta como \cls{no\_gesture} porque no hacen el gesto. Así, los negativos comparten persona,
+fondo e iluminación con los positivos, y la red no puede separar las clases por el contexto. Para
+equilibrar las clases, submuestreamos la nula hasta \NoGestureKept{} ejemplos, el tamaño medio de
+una clase de gesto.
 
-Partimos del subconjunto \code{hagrid-sample-30k-384p} \citep{mills_hagridsample}, que conserva
-las anotaciones originales (cajas en coordenadas normalizadas $[x, y, w, h]$ con origen en la
-esquina superior izquierda, etiqueta por mano y \code{user\_id}) con imágenes reescaladas a
-384\,px en su lado mayor. El plan inicial preveía una versión a 512\,px; elegimos la de 384\,px
-porque es la que está publicada con las cajas y el identificador de persona y su descarga es
-mucho menor. El coste de esta elección es que las manos son pequeñas: el lado mayor de la caja
-tiene una mediana de \LadoCajaMediana{} (el 10\,\% de las manos mide menos de \LadoCajaPdiez), de
-modo que la mayoría de los recortes se \emph{amplían} hasta $128\times128$\,px y pierden detalle
-fino. Volveremos a este punto en la \cref{sec:discusion}.
+Cada mano se recorta como un cuadrado centrado en su caja, de lado 1,5 veces el lado mayor de la
+caja (un margen del 25\,\% por cada lado), y se redimensiona a $128\times128$\,px
+(\cref{fig:recortes}). Las manos son pequeñas (la mediana del lado de la caja es de
+\LadoCajaMediana), así que la mayoría de los recortes se amplían.
 
-De los 18 gestos del subconjunto seleccionamos los ocho que forman el vocabulario de órdenes de
-la \cref{tab:datos}. Los elegimos porque cubren las órdenes básicas de un robot móvil con pinza y
-porque son, en su mayoría, visualmente distintos entre sí; la excepción conocida es el par
-\cls{stop}/\cls{palm}, que solo se diferencia en si los dedos están juntos o separados. Las
-\NImagenesOrig{} imágenes de esos ocho gestos contienen \NManos{} manos anotadas de \NPersonasOrig{}
-personas. La clase nula \cls{no\_gesture} no procede de una carpeta propia: son las
-\NoGestureOrig{} \emph{segundas manos} de esas mismas imágenes, que HaGRID anota como
-\cls{no\_gesture} porque no hacen el gesto (cajas rojas en la \cref{fig:cajas}). Esta construcción
-tiene una ventaja importante: los ejemplos negativos comparten persona, fondo e iluminación con
-los positivos, así que la red no puede distinguir las clases por el contexto y debe fijarse en la
-forma de la mano.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{figures/cajas_muestra.png}
-  \caption{Imágenes de HaGRID con sus anotaciones. En verde, la mano que hace el gesto; en rojo,
-    la segunda mano, etiquetada como \cls{no\_gesture}. La mano ocupa una fracción muy pequeña de
-    la imagen, lo que justifica clasificar recortes y no el fotograma completo.}
-  \label{fig:cajas}
-\end{figure}
-
-\subsection{Equilibrado y partición por persona}
-
-Con \NoGestureOrig{} ejemplos, la clase nula casi duplica a cualquier clase de gesto. Para no
-sesgar la red hacia ella, la submuestreamos aleatoriamente
-(semilla fija) hasta el tamaño medio de una clase de gesto, lo que deja \NoGestureKept{}
-ejemplos. El conjunto final tiene \NTotal{} recortes de \PersonasTotal{} personas.
-
-La partición se hace con \code{StratifiedGroupKFold} de scikit-learn en 20 trozos de
-aproximadamente el 5\,\% de los datos, usando \code{user\_id} como grupo: cada persona cae entera
-en un único trozo y cada trozo mantiene la proporción de clases. Asignamos 14 trozos a
-entrenamiento, 3 a validación y 3 a test, es decir, una partición 70/15/15. El resultado
-(\cref{tab:datos}) tiene \NTrain{} recortes de entrenamiento (\PersonasTrain{} personas), \NVal{}
-de validación (\PersonasVal{} personas) y \NTest{} de test (\PersonasTest{} personas), con
-\PersonasCompartidas{} personas compartidas entre particiones; una prueba automática
-(\code{tests/test\_splits.py}) lo comprueba. Las clases quedan equilibradas en las tres
-particiones, por lo que la exactitud y la F1 macro son métricas comparables y no hace falta
-ponderar la función de pérdida.
+La partición usa \code{StratifiedGroupKFold} con \code{user\_id} como grupo: 20 trozos
+estratificados por clase, de los que 14 van a entrenamiento, 3 a validación y 3 a test
+(70/15/15). Resultan \NTrain{}, \NVal{} y \NTest{} recortes de \PersonasTrain{}, \PersonasVal{} y
+\PersonasTest{} personas, sin ninguna persona compartida entre particiones (lo comprueba una
+prueba automática). La normalización por canal usa estadísticas calculadas solo con
+entrenamiento.
 
 \begin{table}[t]
   \centering
-  \caption{Vocabulario de órdenes y número de recortes por clase y partición, tras equilibrar
-    \cls{no\_gesture}. La partición es por persona: ninguna persona aparece en más de una
-    columna.}
+  \caption{Vocabulario de órdenes y recortes por clase y partición, tras equilibrar
+    \cls{no\_gesture}. Ninguna persona aparece en más de una partición.}
   \label{tab:datos}
   \small
   \TablaDatos
 \end{table}
 
-Por último, la media y la desviación típica por canal que se usan para normalizar las imágenes se
-calculan \emph{solo} con la partición de entrenamiento, para que ninguna información de
-validación o test intervenga en el entrenamiento.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/recortes_muestra.png}
+  \caption{Recortes de $128\times128$\,px de las nueve clases. Los de \cls{no\_gesture} (en rojo)
+    son manos en reposo, sujetando objetos o parcialmente visibles.}
+  \label{fig:recortes}
+\end{figure}

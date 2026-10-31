@@ -27,13 +27,12 @@ from src.run_experiments import CONFIGS_DIR
 from src.train import load_config, train
 
 SEARCH = sorted((CONFIGS_DIR / "busqueda").glob("*.yaml"))
-REFERENCE = CONFIGS_DIR / "completo.yaml"         # ya entrenado en la ablación: results/completo/
+REFERENCE = CONFIGS_DIR / "completo.yaml"
 TABLE_COLS = ["experimento", "cambio", "parametros", "epocas", "mejor_epoca",
               "val_loss", "val_acc", "f1_macro", "errores"]
 
 
 def change(cfg, ref):
-    """Texto con lo que cambia cfg respecto a la referencia, p. ej. 'lr=0.0003'."""
     keys = [k for k in cfg if k != "name" and cfg[k] != ref[k]]
     return ", ".join(f"{k}={cfg[k]}" for k in keys) or "(referencia)"
 
@@ -43,13 +42,12 @@ def is_done(exp_dir):
 
 
 def evaluate_val(ckpt):
-    from src.evaluate import evaluate                 # aquí para que las pruebas con mock no carguen los datos
+    from src.evaluate import evaluate
     return evaluate(ckpt, "val")
 
 
 def run(paths=SEARCH, results_dir=RESULTS, evaluate_fn=evaluate_val, **overrides):
-    """Entrena y evalúa en val las configs que falten. Devuelve los nombres entrenados en esta llamada."""
-    cfgs = [load_config(path, **overrides) for path in paths]   # una errata se ve antes de empezar
+    cfgs = [load_config(path, **overrides) for path in paths]
     pending = [cfg for cfg in cfgs if not is_done(Path(results_dir) / cfg["name"])]
     for cfg in cfgs:
         if cfg not in pending:
@@ -78,13 +76,11 @@ GROUPS = {"Tasa de aprendizaje": ["hp_lr_3e-4", "hp_lr_3e-3"],
           "Tamaño de lote": ["hp_batch_32", "hp_batch_128"],
           "Capacidad": ["hp_filtros_mitad", "hp_4_bloques", "hp_fc_128"],
           "Activación": ["hp_elu", "hp_leaky_relu"]}
-COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]           # orden fijo dentro de cada panel; completo en gris
+COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]
 STYLES = ["-", "--", ":"]
 
 
 def plot_groups(ref_dir, dirs, path):
-    """Un panel por tipo de hiperparámetro: completo (gris) frente a sus variantes. Fila de arriba:
-    pérdida de val en escala log; abajo: accuracy de val ampliada a la zona alta (>= 0,95)."""
     import matplotlib.pyplot as plt
 
     names = {Path(d).name: Path(d) for d in dirs}
@@ -126,10 +122,9 @@ def plot_groups(ref_dir, dirs, path):
 
 def summarize(paths=SEARCH, results_dir=RESULTS, table=RESULTS / "tablas" / "busqueda.csv",
               figure=FIG_DIR / "busqueda_curvas.png"):
-    """Curvas de cada config, figura por grupos y tabla (completo + las configs ya terminadas)."""
     ref_cfg = load_config(REFERENCE)
     ref_run = Path(results_dir) / ref_cfg["name"] / "config.yaml"
-    if ref_run.exists():                              # la config con la que se entrenó de verdad
+    if ref_run.exists():
         ref_cfg = load_config(ref_run)
     names = [ref_cfg["name"]] + [load_config(p)["name"] for p in paths]
     dirs = [Path(results_dir) / n for n in names if is_done(Path(results_dir) / n)]

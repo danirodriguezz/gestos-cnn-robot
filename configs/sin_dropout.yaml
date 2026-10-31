@@ -1,4 +1,3 @@
-# Ablación: igual que completo pero sin Dropout2d ni Dropout(0,5).
 name: sin_dropout
 use_bn: true
 use_dropout: false

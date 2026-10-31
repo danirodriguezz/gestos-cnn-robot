@@ -25,37 +25,36 @@ from src.common import RESULTS, SEED, set_seed
 from src.model import MODEL_KEYS, build_model, save_checkpoint
 
 DEFAULTS = {
-    "name": "debug",            # carpeta dentro de results/
-    "arch": "gesturecnn",       # arquitectura (build_model): gesturecnn | resnet18
-    "pretrained": False,        # solo resnet18: parte de los pesos de ImageNet (necesita internet)
+    "name": "debug",
+    "arch": "gesturecnn",
+    "pretrained": False,
     "use_bn": True,
     "use_dropout": True,
-    "channels": [32, 64, 128, 256, 256],   # filtros por bloque; el nº de bloques es la longitud de la lista
-    "fc_hidden": 0,             # neuronas de una capa FC oculta antes de la salida (0 = sin capa oculta)
-    "activation": "relu",       # relu | leaky_relu | elu
-    "augment": True,            # se pasa a get_dataloaders
+    "channels": [32, 64, 128, 256, 256],
+    "fc_hidden": 0,
+    "activation": "relu",
+    "augment": True,
     "lr": 1e-3,
     "weight_decay": 1e-4,
     "batch_size": 64,
-    "epochs": 50,               # máximo; la parada anticipada suele cortar antes
-    "patience": 6,              # épocas sin mejorar val_loss antes de parar
-    "scheduler": True,          # ReduceLROnPlateau sobre val_loss
+    "epochs": 50,
+    "patience": 6,
+    "scheduler": True,
     "num_workers": 2,
     "seed": SEED,
-    "data": "real",             # "real" (src.dataset de Daniel) o "mock" (src.mock_data)
-    "mock_n": 512,              # ejemplos por partición si data == "mock"
+    "data": "real",
+    "mock_n": 512,
 }
 HISTORY_COLS = ["epoch", "train_loss", "train_acc", "val_loss", "val_acc", "lr"]
 
 
 def load_config(path=None, **overrides):
-    """DEFAULTS, sobrescritos por el yaml y después por los overrides que no sean None."""
     cfg = dict(DEFAULTS)
     if path is not None:
         cfg.update(yaml.safe_load(Path(path).read_text()) or {})
     cfg.update({k: v for k, v in overrides.items() if v is not None})
     unknown = set(cfg) - set(DEFAULTS)
-    if unknown:                             # una errata en el yaml no debe ignorarse en silencio
+    if unknown:
         raise ValueError(f"claves desconocidas en la configuración: {sorted(unknown)}")
     return cfg
 
@@ -76,18 +75,16 @@ def get_loaders(cfg):
 
 
 class EarlyStopping:
-    """Para si val_loss no mejora en `patience` épocas y guarda una copia de los mejores pesos."""
-
     def __init__(self, patience=6):
         self.patience, self.best, self.count, self.state = patience, float("inf"), 0, None
 
     def step(self, val_loss, model):
         if val_loss < self.best:
             self.best, self.count = val_loss, 0
-            self.state = copy.deepcopy(model.state_dict())   # mejores pesos
+            self.state = copy.deepcopy(model.state_dict())
         else:
             self.count += 1
-        return self.count >= self.patience                   # True -> parar
+        return self.count >= self.patience
 
     @property
     def improved(self):
@@ -95,7 +92,7 @@ class EarlyStopping:
 
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
-    model.train()                           # activa dropout y BN con estadísticas del lote
+    model.train()
     total_loss, correct, n = 0.0, 0, 0
     for x, y in loader:
         x, y = x.to(device), y.to(device)
@@ -110,9 +107,9 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
     return total_loss / n, correct / n
 
 
-@torch.no_grad()                            # sin gradientes: menos memoria y más rápido
+@torch.no_grad()
 def evaluate(model, loader, criterion, device):
-    model.eval()                            # desactiva dropout; BN usa sus medias acumuladas
+    model.eval()
     total_loss, correct, n = 0.0, 0, 0
     for x, y in loader:
         x, y = x.to(device), y.to(device)
@@ -124,7 +121,6 @@ def evaluate(model, loader, criterion, device):
 
 
 def train(cfg, results_dir=RESULTS):
-    """Entrena según cfg. Devuelve (modelo con los mejores pesos, lista de filas de history)."""
     set_seed(cfg["seed"])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     loaders = get_loaders(cfg)
@@ -149,15 +145,15 @@ def train(cfg, results_dir=RESULTS):
             t0 = time.perf_counter()
             train_loss, train_acc = train_one_epoch(model, loaders["train"], criterion, optimizer, device)
             val_loss, val_acc = evaluate(model, loaders["val"], criterion, device)
-            lr = optimizer.param_groups[0]["lr"]          # lr usado en esta época
+            lr = optimizer.param_groups[0]["lr"]
 
             row = dict(zip(HISTORY_COLS, [epoch, train_loss, train_acc, val_loss, val_acc, lr]))
             history.append(row)
             writer.writerow(row)
-            f.flush()                                     # si se corta la sesión, lo hecho queda escrito
+            f.flush()
 
             stop = stopper.step(val_loss, model)
-            if stopper.improved:                          # se guarda en cada mejora, no solo al final
+            if stopper.improved:
                 save_checkpoint(out / "best.pt", model, cfg)
             print(f"época {epoch:3d} · train {train_loss:.4f} / {train_acc:.3f} · "
                   f"val {val_loss:.4f} / {val_acc:.3f} · lr {lr:.1e} · {time.perf_counter() - t0:.1f}s"

@@ -25,7 +25,6 @@ def test_prediccion_perfecta():
 
 
 def test_metricas_conocidas():
-    # 2 stop (uno se predice like) y 2 like bien: acc 3/4; F1 stop = 2/3, F1 like = 0,8
     m = compute_metrics(np.array([0, 0, 1, 1]), np.array([0, 1, 1, 1]))
     assert m["accuracy"] == 0.75
     assert m["f1_por_clase"]["stop"] == pytest.approx(2 / 3, abs=1e-4)
@@ -34,7 +33,7 @@ def test_metricas_conocidas():
 
 def test_top_confusions():
     y_true = np.concatenate([ALL, [0, 0, 0]])
-    y_pred = np.concatenate([ALL, [6, 6, 0]])      # 2 de los 4 stop se predicen palm
+    y_pred = np.concatenate([ALL, [6, 6, 0]])
     assert top_confusions(y_true, y_pred)[0] == ("stop", "palm", 0.5)
 
 
@@ -43,7 +42,7 @@ def test_predict_con_dummynet():
     y = torch.randint(0, len(CLASSES), (20,))
     model = DummyNet().train()
     y_true, y_pred = predict(model, DataLoader(TensorDataset(x, y), batch_size=8))
-    assert not model.training                        # predict deja el modelo en eval()
+    assert not model.training
     assert np.array_equal(y_true, y.numpy()) and y_pred.shape == (20,)
     assert y_pred.min() >= 0 and y_pred.max() < len(CLASSES)
 
@@ -56,13 +55,12 @@ def test_plot_confusion(tmp_path):
 
 def test_test_se_evalua_una_sola_vez(tmp_path):
     (tmp_path / "metrics_test.json").write_text("{}")
-    with pytest.raises(SystemExit):                  # se niega antes de cargar nada
+    with pytest.raises(SystemExit):
         evaluate(tmp_path / "best.pt", split="test")
 
 
 @pytest.mark.skipif(not (SPLITS_CSV.exists() and CROPS_DIR.exists()), reason="faltan splits.csv o los recortes")
 def test_punta_a_punta(tmp_path):
-    """GestureCNN sin entrenar guardado con save_checkpoint, evaluado sobre un subconjunto real."""
     data = tmp_path / "data"
     data.mkdir()
     pd.read_csv(SPLITS_CSV).groupby(["split", "label"]).head(3).to_csv(data / "splits.csv", index=False)

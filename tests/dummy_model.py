@@ -12,7 +12,7 @@ class DummyNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv = nn.Conv2d(3, 8, 3, padding=1)
-        self.gradcam_layer = self.conv              # mismo contrato que build_model
+        self.gradcam_layer = self.conv
         self.head = nn.Sequential(nn.ReLU(), nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(8, len(CLASSES)))
 
     def forward(self, x):

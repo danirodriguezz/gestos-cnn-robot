@@ -1,3 +1,2 @@
-# Búsqueda de hiperparámetros: completo con un solo cambio. Lote de 128 (completo: 64).
 name: hp_batch_128
 batch_size: 128

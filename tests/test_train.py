@@ -19,9 +19,9 @@ def test_early_stopping():
     assert not stopper.step(1.0, model) and stopper.improved
     best = {k: v.clone() for k, v in stopper.state.items()}
     with torch.no_grad():
-        model.weight.add_(1.0)              # los pesos cambian pero no mejora
+        model.weight.add_(1.0)
     assert not stopper.step(1.5, model) and not stopper.improved
-    assert stopper.step(1.2, model)         # segunda época sin mejorar -> parar
+    assert stopper.step(1.2, model)
     assert all(torch.equal(best[k], stopper.state[k]) for k in best)
 
 
@@ -54,8 +54,7 @@ def test_ficheros_de_salida(tmp_path):
 
 
 def test_sobreajusta_64_imagenes(tmp_path):
-    """Criterio de «hecho» de C4: si el bucle está bien, memoriza 64 imágenes (pérdida ≈ 0)."""
     cfg = mock_cfg(name="overfit", mock_n=64, use_dropout=False, scheduler=False,
-                   epochs=15, patience=15)  # val es ruido: la parada anticipada cortaría enseguida
+                   epochs=15, patience=15)
     _, history = train(cfg, results_dir=tmp_path)
     assert history[-1]["train_loss"] < 0.05 and history[-1]["train_acc"] == 1.0

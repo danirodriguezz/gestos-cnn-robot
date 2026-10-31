@@ -4,22 +4,12 @@
 \subsection{Búsqueda de hiperparámetros}
 \label{sec:busqueda}
 
-La \cref{tab:busqueda} recoge las \NConfigsBusqueda{} configuraciones de la búsqueda junto con la
-de referencia, y la \cref{fig:busqueda} compara sus curvas de validación agrupadas por tipo de
-hiperparámetro. El primer resultado es que la red es poco sensible a todos los cambios probados:
-salvo el lote de 32, todas las configuraciones quedan entre el \AccValBusquedaMin{} y el
-\AccValBusquedaMax{} de exactitud de validación, a pocas imágenes de la referencia
-(\AccValCompleto, \ErroresValCompleto{} errores). Como referencia del ruido, dos ejecuciones
-idénticas del modelo completo con semillas distintas obtienen \AccValCompleto{} y
-\AccValCompletoS{} (\ErroresValCompleto{} y \ErroresValCompletoS{} errores), así que la mayoría de
-las diferencias de la tabla no deben interpretarse como efectos de los hiperparámetros.
-
 \begin{table}[t]
   \centering
   \caption{Búsqueda manual de hiperparámetros, solo en validación (\NVal{} imágenes). Cada fila
-    cambia un único hiperparámetro de la referencia (tasa de aprendizaje $10^{-3}$, lote de 64,
-    cinco bloques de 32 a 256 filtros, sin capa oculta y ReLU); todas usan la semilla 42. Pérdida:
-    pérdida de validación en la mejor época. En negrita, la configuración elegida como modelo final.}
+    cambia un único hiperparámetro de la referencia (tasa $10^{-3}$, lote de 64, cinco bloques de
+    32 a 256 filtros, sin capa oculta, ReLU); todas usan la semilla 42. Pérdida: pérdida de
+    validación en la mejor época. En negrita, la configuración elegida como modelo final.}
   \label{tab:busqueda}
   \small
   \setlength{\tabcolsep}{3.3pt}
@@ -29,323 +19,161 @@ las diferencias de la tabla no deben interpretarse como efectos de los hiperpar�
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/busqueda_curvas.png}
-  \caption{Curvas de validación de la búsqueda, un panel por tipo de hiperparámetro. En gris, la
-    configuración de referencia. Arriba, la pérdida en escala logarítmica; abajo, la exactitud,
-    ampliada por encima del 95\,\%. El punto marca la mejor época (pesos restaurados).}
+  \caption{Curvas de validación de la búsqueda, un panel por tipo de hiperparámetro; en gris, la
+    referencia. Arriba, la pérdida (escala logarítmica); abajo, la exactitud por encima del
+    95\,\%. El punto marca la mejor época.}
   \label{fig:busqueda}
 \end{figure}
 
-Por grupos:
-\begin{itemize}
-  \item \textbf{Tasa de aprendizaje.} Con $3\cdot10^{-3}$ y con $3\cdot10^{-4}$ la parada
-    anticipada actúa antes (épocas \EpocasLrAlta{} y 31, frente a \EpocasCompleto), pero la
-    exactitud final no cambia de forma apreciable. Probablemente, Adam y la reducción de la tasa en las
-    mesetas hacen que el valor inicial importe poco dentro de este intervalo.
-  \item \textbf{Tamaño de lote.} Es el único cambio que mejora tanto la exactitud como la pérdida
-    de validación: con lotes de 32 se obtiene la menor pérdida de la búsqueda y
-    \ErroresValFinal{} errores, frente a \ErroresValCompleto. Con la misma tasa de aprendizaje, un
-    lote menor da el doble de actualizaciones por época y un gradiente más ruidoso, que actúa
-    como un regularizador adicional. El lote de 128 va en la dirección contraria: para antes y
-    queda ligeramente por debajo.
-  \item \textbf{Capacidad.} Con la mitad de filtros en cada bloque, la red tiene cuatro veces
-    menos parámetros (\ParamsFiltrosMitad) y obtiene la misma exactitud (\AccValFiltrosMitad).
-    Esto indica que GestureCNN está sobredimensionada para esta tarea. Quitar el último bloque
-    es el cambio que más empeora el resultado y el que más ralentiza el aprendizaje
-    (\cref{fig:busqueda}): con un mapa final de $8\times8$, cada filtro de la última capa ve una
-    región menor de la mano antes del \emph{global average pooling}. Añadir una capa oculta a la
-    cabeza no aporta nada.
-  \item \textbf{Activación.} ELU y LeakyReLU quedan algo por debajo de ReLU y tardan más en
-    converger. Con ELU, el entrenamiento llegó al máximo de 50 épocas.
-\end{itemize}
+La red es poco sensible a los cambios probados (\cref{tab:busqueda,fig:busqueda}): salvo el lote
+de 32, todas las configuraciones quedan entre el \AccValBusquedaMin{} y el \AccValBusquedaMax{} de
+exactitud de validación, a pocas imágenes de la referencia (\AccValCompleto). Para dar una medida
+del ruido, dos ejecuciones idénticas del modelo completo con distinta semilla obtienen
+\AccValCompleto{} y \AccValCompletoS. Con las tasas de $3\cdot10^{-3}$ y $3\cdot10^{-4}$ la parada
+anticipada actúa antes (épocas \EpocasLrAlta{} y 31, frente a \EpocasCompleto), sin cambiar la
+exactitud. Con la mitad de filtros la red rinde igual (\AccValFiltrosMitad) con cuatro veces menos
+parámetros, lo que indica que está sobredimensionada. Quitar el último bloque es el cambio que más
+empeora el resultado y el que más ralentiza el aprendizaje. La capa oculta no aporta nada, y ELU y
+LeakyReLU quedan algo por debajo de ReLU.
 
-Siguiendo el criterio fijado de antemano, elegimos como modelo final la configuración con lotes de
-32. Su ventaja en validación (siete errores menos que la referencia) es mayor que la diferencia
-entre las dos semillas del modelo completo, pero procede de una sola ejecución. Además, al elegir
-la mejor de diez configuraciones con el mismo conjunto de validación, su exactitud de validación
-tiende a sobrestimar la real. El test permite comprobarlo (\cref{sec:test}).
+El único cambio que mejora a la vez la exactitud y la pérdida de validación es el lote de 32
+(\ErroresValFinal{} errores, frente a \ErroresValCompleto): con la misma tasa, da el doble de
+actualizaciones por época y un gradiente más ruidoso, que actúa como regularizador. Según el
+criterio fijado, pasa a ser el modelo final. Aun así, su ventaja procede de una sola ejecución y de
+elegir la mejor de diez configuraciones, así que su exactitud de validación tiende a ser optimista.
 
-\subsection{Entrenamiento del modelo final}
-
-La \cref{fig:curvas} muestra las curvas de entrenamiento del modelo final, GestureCNN con lotes
-de 32. La parada anticipada
-detuvo el entrenamiento en la época \EpocasFinal{} y restauró los pesos de la época
-\MejorepocaFinal, la de menor pérdida de validación. La exactitud de validación supera el 95\,\%
-en la época \EpocanoventaycincoFinal; a partir de ahí, las \NreduccioneslrFinal{} reducciones de la
-tasa de aprendizaje (épocas \ReduccioneslrFinal) producen las mejoras finales.
-
-Las curvas de entrenamiento y validación casi se superponen: al final del entrenamiento la
-exactitud de entrenamiento supera a la de validación en solo \BrechaFinal{} puntos, de modo que no
-hay sobreajuste apreciable. En las primeras épocas la exactitud de validación es incluso
-\emph{mayor} que la de entrenamiento. No es una anomalía: las métricas de entrenamiento se miden
-con el \emph{dropout} activo y sobre imágenes aumentadas, que son más difíciles que las de
-validación.
+\subsection{Modelo final}
+\label{sec:test}
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{final/curves.png}
-  \caption{Pérdida y exactitud de entrenamiento y validación del modelo final. Línea continua:
-    mejor época (pesos restaurados). Líneas punteadas: reducciones de la tasa de aprendizaje.}
+  \includegraphics[width=0.92\linewidth]{final/curves.png}
+  \caption{Pérdida y exactitud de entrenamiento y validación del modelo final (lotes de 32).
+    Línea continua: mejor época (pesos restaurados); punteadas: reducciones de la tasa de
+    aprendizaje.}
   \label{fig:curvas}
 \end{figure}
 
-\subsection{Rendimiento en test}
-\label{sec:test}
+La parada anticipada detuvo el entrenamiento en la época \EpocasFinal{} y restauró los pesos de
+la \MejorepocaFinal{} (\cref{fig:curvas}). La exactitud de validación supera el 95\,\% en la
+época \EpocanoventaycincoFinal, y las reducciones de la tasa (épocas \ReduccioneslrFinal) producen
+las mejoras finales. Las curvas de entrenamiento y validación casi se superponen (diferencia
+final: \BrechaFinal{} puntos), así que no hay sobreajuste apreciable. Al principio, la exactitud de
+validación supera a la de entrenamiento porque esta se mide con el \emph{dropout} activo y sobre
+imágenes aumentadas.
 
-Evaluado una sola vez sobre las \NTest{} imágenes de las \PersonasTest{} personas de test, el
-modelo final alcanza una exactitud del \AccTestFinal{} (IC del 95\,\%: \AccTestFinalIC) y una F1
-macro del \FoneTestFinal{} (IC: \FoneTestFinalIC), con \ErroresTestFinal{} errores. El objetivo del
-85\,\% se supera con un margen de unos 14 puntos, y el extremo inferior del intervalo de confianza
-queda también muy por encima.
-
-\paragraph{Comparación con el modelo final anterior.}
-Como se explica en la \cref{sec:protocolo}, el test ya se había evaluado con el modelo completo
-(lotes de 64) antes de la búsqueda. Ese modelo obtuvo un \AccTestCompleto{} (IC del 95\,\%:
-\AccTestCompletoIC) con \ErroresTestCompleto{} errores, de modo que en test los dos modelos son
-prácticamente iguales. Sobre las mismas imágenes, \SolofinalCompleto{} las acierta solo el modelo
-final y \SolovarianteCompleto{} solo el completo (McNemar: \PmcnemarFinalCompleto). La mejora de
-validación que motivó el cambio no se traslada al test. Es lo esperable si se debía en buena parte
-al ruido y a haber elegido la mejor de diez configuraciones: la exactitud de validación del modelo
-final (\AccValFinal) supera a la de test, mientras que la del modelo completo, que no se eligió
-entre tantas alternativas, coincidía con ella (\AccValCompleto{} y \AccTestCompleto). Ninguna de
-las conclusiones del trabajo depende de cuál de los dos modelos se tome como final.
-
-\begin{table}[t]
-  \centering
-  \caption{Métricas por clase del modelo final en test. El \emph{recall} es la diagonal de la
-    matriz de confusión de la \cref{fig:confusion}.}
-  \label{tab:porclase}
-  \small
-  \TablaPorClase
-\end{table}
+Evaluado una sola vez en test (\NTest{} imágenes de \PersonasTest{} personas), el modelo final
+alcanza una exactitud del \AccTestFinal{} (IC del 95\,\%: \AccTestFinalIC) y una F1 macro del
+\FoneTestFinal, con \ErroresTestFinal{} errores, unos 14 puntos por encima del objetivo. El modelo
+completo, el final anterior, obtuvo un \AccTestCompleto{} (IC: \AccTestCompletoIC) con
+\ErroresTestCompleto{} errores. Sobre las mismas imágenes, \SolofinalCompleto{} las acierta solo
+el modelo final y \SolovarianteCompleto{} solo el completo (McNemar: \PmcnemarFinalCompleto). La
+mejora de validación no se traslada al test, como cabe esperar si se debía en parte al ruido y a
+la selección: la exactitud de validación del modelo final (\AccValFinal) supera a la de test,
+mientras que en el completo coincidían. Ninguna de las conclusiones depende de cuál de los dos se
+tome como final.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.66\linewidth]{final/confusion_test.png}
-  \caption{Matriz de confusión del modelo final en test, normalizada por filas (cada fila suma 1;
-    la diagonal es el \emph{recall}). Se omiten las celdas por debajo de 0,005.}
-  \label{fig:confusion}
+  \begin{minipage}[c]{0.575\linewidth}
+    \centering\footnotesize
+    \setlength{\tabcolsep}{1.8pt}
+    \captionof{table}{Métricas por clase del modelo final en test.}
+    \label{tab:porclase}
+    \TablaPorClase
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.405\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{final/confusion_test.png}
+    \captionof{figure}{Matriz de confusión del modelo final en test, normalizada por filas (la
+      diagonal es el \emph{recall}).}
+    \label{fig:confusion}
+  \end{minipage}
 \end{figure}
 
-El rendimiento es homogéneo entre clases (\cref{tab:porclase}): todas superan el 98\,\% de F1, y
-la peor es \PeorClaseTest{} (\PeorFoneTest). Las confusiones más frecuentes
-(\cref{fig:confusion}) son \ConfusionesTestFinal. De los \ErroresTestFinal{} errores,
-\ErroresEnPares{} corresponden a los dos pares de gestos visualmente próximos que anticipamos en la
-\cref{sec:datos}: \cls{stop}/\cls{palm}, que solo se distinguen por si los dedos están juntos o
-separados, y \cls{like}/\cls{call}, que comparten el pulgar extendido y se diferencian por el
-meñique.
-
-Desde el punto de vista del robot, el error más grave es interpretar una mano en reposo como una
-orden. En test, \FalsasActivaciones{} de los \NNoGestureTest{} ejemplos de \cls{no\_gesture}
-(\TasaFalsasActivaciones) se clasificaron como algún gesto, y \Omisiones{} gestos se clasificaron
-como \cls{no\_gesture}. Estas tasas se refieren a fotogramas aislados; el filtro temporal de la
-demo (\cref{sec:demo}) está pensado precisamente para que un error aislado no llegue a mover el
-robot.
+Todas las clases superan el 98\,\% de F1 (\cref{tab:porclase}); la peor es \PeorClaseTest{}
+(\PeorFoneTest). Las confusiones más frecuentes (\cref{fig:confusion}) son
+\ConfusionesTestFinal. \ErroresEnPares{} de los \ErroresTestFinal{} errores caen en dos pares de
+gestos visualmente próximos: \cls{stop}/\cls{palm}, que solo se distinguen por si los dedos están
+juntos o separados, y \cls{like}/\cls{call}, que se diferencian por el meñique. Para el robot, el
+error más grave es tomar una mano en reposo por una orden: \FalsasActivaciones{} de los
+\NNoGestureTest{} ejemplos de \cls{no\_gesture} de test (\TasaFalsasActivaciones) se clasificaron
+como algún gesto.
 
 \subsection{Estudio de ablación}
 \label{sec:ablacion}
 
-La \cref{tab:ablacion} resume las cuatro variantes de GestureCNN, cada una entrenada con dos
-semillas, junto con ResNet18. La \cref{tab:semillas} detalla cada ejecución y las pruebas de
-McNemar, y la \cref{fig:comparacion} compara las curvas de validación.
-
 \begin{table}[t]
   \centering
-  \caption{Estudio de ablación: media de las semillas 42 y 43 de cada variante. Cada variante
-    elimina un único componente del modelo completo; el resto de la configuración es idéntico.
-    La columna de épocas indica las épocas entrenadas con cada semilla (máximo 50).
-    $^\dagger$ResNet18 se entrenó una sola vez, con la semilla 42.}
+  \caption{Ablación: media de las semillas 42 y 43. Cada variante quita un único componente del
+    modelo completo (lotes de 64); la última columna da las épocas de cada semilla.
+    $^\dagger$ResNet18 se entrenó una sola vez.}
   \label{tab:ablacion}
   \small
   \setlength{\tabcolsep}{4.5pt}
   \TablaAblacion
 \end{table}
 
-\begin{table}[t]
-  \centering
-  \caption{Detalle por semilla. Exactitud de validación y número de errores en test (de
-    \NTest{} imágenes) de cada ejecución. Las tres últimas columnas comparan en test cada variante
-    (semilla 42) con el modelo completo (semilla 42): imágenes que solo acierta el completo, que
-    solo acierta la variante, y valor $p$ de la prueba exacta de McNemar.}
-  \label{tab:semillas}
-  \small
-  \setlength{\tabcolsep}{4.5pt}
-  \TablaSemillas
-\end{table}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{figures/comparacion_curvas.png}
-  \caption{Pérdida y exactitud de validación de las cuatro variantes (semilla 42) y de ResNet18.
-    El punto marca la mejor época de cada modelo.}
-  \label{fig:comparacion}
-\end{figure}
-
-\paragraph{Normalización por lotes.}
-Quitar BN es la única ablación con un efecto claro y consistente. La variante sin BN obtiene la
-peor exactitud con las dos semillas (media de \AccTestMediaSinBn{} en test frente a
-\AccTestMediaCompleto{} del modelo completo) y comete más del doble de errores en test. La
-diferencia es significativa: de las imágenes en las que solo uno de los dos modelos acierta,
+La normalización por lotes es la única ablación con un efecto claro (\cref{tab:ablacion}). Sin BN,
+la exactitud media en test baja al \AccTestMediaSinBn, frente al \AccTestMediaCompleto, y los
+errores se duplican. De las imágenes en las que solo acierta uno de los dos modelos,
 \SolocompletoSinBn{} las acierta el completo y \SolovarianteSinBn{} la variante sin BN
-(\PmcnemarSinBn). Además, sin BN el aprendizaje es mucho más lento
-(\cref{fig:comparacion}): tras la primera época la exactitud de validación es del
-\AccepocaunoSinBn, poco por encima del 11,1\,\% de un clasificador aleatorio, y no supera el 95\,\% hasta la
-época \EpocanoventaycincoSinBn, frente a la época \EpocanoventaycincoCompleto{} del modelo
-completo. Con las dos semillas el entrenamiento agotó las 50 épocas sin que actuara la parada
-anticipada, y la mejor época fue una de las últimas (\MejorepocaSinBn{} y \MejorepocaSinBnS). Por
-tanto, el resultado debe leerse como \emph{«con el mismo presupuesto de épocas, sin BN se llega a
-un modelo peor»}: con más épocas, o con una tasa de aprendizaje ajustada para esta variante, la
-distancia probablemente se reduciría.
+(\PmcnemarSinBn). Sin BN el aprendizaje es además mucho más lento: tras la primera época la
+exactitud de validación es del \AccepocaunoSinBn, y no supera el 95\,\% hasta la época
+\EpocanoventaycincoSinBn{} (la \EpocanoventaycincoCompleto{} en el completo). Con ambas semillas
+agotó las 50 épocas sin converger, así que el resultado debe leerse como «con el mismo presupuesto
+de épocas».
 
-\paragraph{Dropout.}
-Quitar el \emph{dropout} no tiene un efecto que podamos distinguir de la variación entre
-ejecuciones. Con la semilla 42 el modelo completo es ligeramente mejor, y con la semilla 43 lo es
-la variante sin \emph{dropout}; en media, las exactitudes de test son prácticamente iguales
-(\AccTestMediaCompleto{} frente a \AccTestMediaSinDropout), con una diferencia del mismo orden
-que la que separa dos ejecuciones idénticas del modelo completo, y la prueba de McNemar no detecta
-diferencias
-(\PmcnemarSinDropout). El \emph{dropout} sí deja una huella en las curvas: sin él, la red aprende
-más deprisa al principio (\AccepocaunoSinDropout{} tras la primera época frente al
-\AccepocaunoCompleto) y la diferencia final entre la exactitud de entrenamiento y la de validación
-es mayor (\BrechaSinDropout{} puntos frente a \BrechaCompleto). Es decir, el \emph{dropout} reduce
-el ajuste a los datos de entrenamiento, pero con \NTrain{} imágenes y aumento de datos el modelo
-completo apenas sobreajusta, y esa regularización adicional no se traduce en más exactitud.
+Quitar el \emph{dropout} (\PmcnemarSinDropout) o el aumento de datos (\PmcnemarSinAug) no tiene
+un efecto distinguible de la variación entre ejecuciones: dos ejecuciones idénticas del modelo
+completo cometen \ErroresTestCompleto{} y \ErroresTestCompletoS{} errores en test. Su huella está
+en la dinámica del entrenamiento. Sin aumento de datos, la red memoriza el conjunto de
+entrenamiento, la diferencia entre entrenamiento y validación es la mayor de la ablación
+(\BrechaSinAug{} puntos, frente a \BrechaCompleto) y la parada actúa antes (épocas
+\EpocasSinAug{} y \EpocasSinAugS).
 
-\paragraph{Aumento de datos.}
-Sin aumento de datos, la exactitud media en test baja a \AccTestMediaSinAug{} y los errores en
-test pasan de \ErroresTestCompleto{} a \ErroresTestSinAug{} y a \ErroresTestSinAugS{} con las dos
-semillas, frente a \ErroresTestCompleto{} y \ErroresTestCompletoS{} del modelo completo. La
-dirección del efecto es la esperada y se repite en test con ambas semillas, pero es pequeña: en
-validación, con la semilla 43, ambas variantes empatan, y la prueba de McNemar con la semilla 42
-no declara significativa la diferencia (\PmcnemarSinAug). Donde el efecto
-se ve con claridad es en la dinámica del entrenamiento: sin aumento de datos la red memoriza el
-conjunto de entrenamiento (su exactitud de entrenamiento llega al 99,9\,\% con ambas
-semillas), la pérdida de
-validación deja de mejorar antes y la parada anticipada actúa en la época \EpocasSinAug{} y
-\EpocasSinAugS, las más tempranas de todas las variantes. La diferencia final entre entrenamiento
-y validación, de \BrechaSinAug{} puntos, es la mayor de la ablación. Es la firma típica de un
-sobreajuste incipiente que la parada anticipada corta a tiempo.
-
-\paragraph{Variación entre semillas.}
-Dos ejecuciones idénticas del modelo completo difieren en \ErroresTestCompleto{} y
-\ErroresTestCompletoS{} errores de test y en la época de parada (\EpocasCompleto{} y
-\EpocasCompletoS). Diferencias entre variantes de ese orden, de unas pocas imágenes, no deben
-interpretarse como efectos de la arquitectura. Este es el principal motivo por el que solo
-consideramos concluyente el efecto de BN.
-
-\subsection{Comparación con ResNet18}
+\subsection{Comparación con ResNet18 y coste}
 \label{sec:resnet}
 
-ResNet18 preentrenado parte de una ventaja clara: tras la primera época ya alcanza un
-\AccepocaunoResnet{} de exactitud en validación, frente al \AccepocaunoFinal{} de GestureCNN, que
-parte de pesos aleatorios. La parada anticipada lo detuvo en la época \EpocasResnet{} (mejor
-época: \MejorepocaResnet). En test obtiene una exactitud del \AccTestResnet{} (IC del 95\,\%:
-\AccTestResnetIC) y una F1 macro del \FoneTestResnet, con \ErroresTestResnet{} errores frente a
-los \ErroresTestFinal{} de GestureCNN.
+ResNet18 preentrenado alcanza un \AccepocaunoResnet{} de exactitud de validación tras la primera
+época (GestureCNN: \AccepocaunoFinal). En test obtiene un \AccTestResnet{} (IC:
+\AccTestResnetIC), con \ErroresTestResnet{} errores frente a los \ErroresTestFinal{} de
+GestureCNN. La diferencia no es significativa: \SolovarianteResnet{} imágenes las acierta solo
+ResNet18 y \SolofinalResnet{} solo GestureCNN (\PmcnemarFinalResnet). El preentrenamiento acelera
+la convergencia, pero no podemos afirmar que un modelo con \RatioParams{} veces más parámetros
+generalice mejor.
 
-La diferencia, sin embargo, no es estadísticamente significativa. Sobre las mismas imágenes de
-test, solo \SolovarianteResnet{} imágenes las acierta ResNet18 y falla GestureCNN, y
-\SolofinalResnet{} al revés; la prueba de McNemar da \PmcnemarFinalResnet, y los intervalos de
-confianza de ambos modelos se solapan ampliamente. Con estos datos, por tanto, no podemos afirmar
-que un modelo con \RatioParams{} veces más parámetros y preentrenado con más de un millón de
-imágenes generalice mejor que nuestra red entrenada desde cero. Lo que sí aporta el
-preentrenamiento es una convergencia mucho más rápida.
-
-Las confusiones de ResNet18 son del mismo tipo: su error más frecuente también es el par
-\cls{palm}/\cls{stop}. Sus mapas Grad-CAM (\cref{fig:gradcam-resnet}) se centran igualmente en
-la mano, pero son mucho más gruesos, porque su última capa convolucional tiene una resolución de
-$4\times4$ frente a $8\times8$ en GestureCNN; para explicar decisiones a nivel de dedos, la red
-propia resulta más interpretable.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{resnet18/gradcam_aciertos_val.png}
-  \caption{Grad-CAM de ResNet18 sobre un acierto de cada clase (validación). Los mapas se
-    calculan sobre una rejilla de $4\times4$ y localizan la mano con menos detalle que los de
-    GestureCNN (\cref{fig:gradcam-aciertos}).}
-  \label{fig:gradcam-resnet}
-\end{figure}
+En cuanto al coste, el número de parámetros engaña. GestureCNN tiene \RatioParams{} veces menos
+parámetros que ResNet18, pero hace \RatioMacs{} veces más operaciones por imagen (\MacsFinal{}
+frente a \MacsResnet{} MACs), porque sus dos primeros bloques trabajan a $128^2$ y $64^2$\,px y
+acumulan el \FracMacsPrimerosBloques{} de las operaciones. Aun así, con una sola imagen clasifica
+un recorte en \LatCpuFinal{} en la CPU (\CPU) y en \LatCudaFinal{} en la GPU, frente a
+\LatCpuResnet{} y \LatCudaResnet{} de ResNet18. Los dos modelos caben holgadamente en los 33\,ms
+por fotograma de una cámara a 30\,fps.
 
 \subsection{Explicabilidad con Grad-CAM}
 \label{sec:gradcam}
 
-La \cref{fig:gradcam-aciertos} muestra un acierto de cada clase en validación con su mapa
-Grad-CAM. En todos los casos la activación se concentra sobre la mano y no sobre el fondo: en
-\cls{stop} la cara de la persona aparece en el recorte y queda fuera del mapa. Además, los mapas
-señalan los rasgos que definen cada gesto: la palma y la base de los dedos en \cls{stop} y
-\cls{palm}, el puño con el pulgar hacia abajo en \cls{dislike} y, sobre todo, \cls{call}, cuyo
-mapa tiene dos máximos, uno sobre el pulgar y otro sobre el meñique, los dos dedos extendidos que
-definen el gesto. El ejemplo con menos confianza es un \cls{peace} (0,57) con el fondo partido por
-una franja negra de relleno, en el que el mapa se reparte entre los dos dedos y el borde de la
-imagen.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{final/gradcam_aciertos_val.png}
-  \caption{Grad-CAM del modelo final sobre un acierto de cada clase (validación, elegidos al azar
-    con semilla fija). Entre paréntesis, la probabilidad asignada a la clase. Rojo: regiones que
-    empujan la predicción hacia esa clase.}
-  \label{fig:gradcam-aciertos}
-\end{figure}
-
-La \cref{fig:gradcam-errores} muestra los errores en los que el modelo estaba más seguro. Son
-especialmente informativos porque se agrupan en tres tipos:
+En los aciertos de validación, la activación se concentra sobre la mano, no sobre el fondo ni la
+cara, y señala los rasgos de cada gesto: en \cls{call}, por ejemplo, el mapa tiene dos máximos,
+sobre el pulgar y sobre el meñique. La \cref{fig:gradcam} muestra los errores más seguros, que son
+de tres tipos:
 \begin{itemize}
-  \item \textbf{Ruido de etiqueta.} El primer error es un \cls{no\_gesture} que la red clasifica
-    como \cls{palm} con probabilidad 1,00, y la imagen muestra, efectivamente, una palma abierta
-    hacia la cámara; la etiqueta \cls{no\_gesture} procede de la anotación original. En este
-    caso la predicción es más razonable que la etiqueta.
-  \item \textbf{Objetos con forma de gesto.} Un \cls{no\_gesture} que sujeta un teléfono se
-    clasifica como \cls{peace}, y en un \cls{one} delante de una estantería el borde vertical del
-    mueble, junto al índice, se lee como un segundo dedo extendido (\cls{peace}).
-  \item \textbf{Pares próximos e imágenes de baja calidad.} En los dos
-    \cls{palm}$\to$\cls{stop} la separación entre los dedos es intermedia, y los mapas de la clase
-    real y de la predicha se concentran en la misma zona: la red mira el lugar correcto, pero la
-    evidencia es ambigua. Los \cls{like} vistos de perfil se confunden con \cls{call} o con
-    \cls{one}, porque en esa vista el pulgar levantado se parece al meñique de \cls{call} o al
-    índice de \cls{one}. Un \cls{palm} pixelado hasta ser irreconocible se clasifica como
-    \cls{peace}.
+  \item \textbf{Ruido de etiqueta}: un \cls{no\_gesture} que es, de hecho, una palma abierta, y
+    que la red clasifica como \cls{palm} con probabilidad 1,00.
+  \item \textbf{Objetos con forma de gesto}: un teléfono, o el borde vertical de un mueble junto
+    al índice, que la red lee como los dedos de \cls{peace}.
+  \item \textbf{Pares próximos o imágenes de baja calidad}: \cls{palm}$\to$\cls{stop} con una
+    separación intermedia entre los dedos, \cls{like} de perfil confundidos con \cls{call} o
+    \cls{one}, y un \cls{palm} pixelado.
 \end{itemize}
+En los pares próximos, los mapas de la clase real y de la predicha coinciden: la red mira el lugar
+correcto, pero la evidencia es ambigua.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{final/gradcam_errores_val.png}
+  \includegraphics[width=0.85\linewidth]{final/gradcam_errores_val.png}
   \caption{Errores más seguros del modelo final en validación. Para cada uno: la imagen con su
-    clase real, el mapa de la clase predicha y el mapa de la clase real.}
-  \label{fig:gradcam-errores}
+    clase real, el mapa de la clase predicha y el de la clase real.}
+  \label{fig:gradcam}
 \end{figure}
-
-\subsection{Coste computacional}
-\label{sec:coste}
-
-La \cref{tab:coste} resume el coste de los dos modelos. El resultado más llamativo es que el
-número de parámetros no predice el coste de cálculo: GestureCNN tiene \RatioParams{} veces
-\emph{menos} parámetros que ResNet18, pero necesita \RatioMacs{} veces \emph{más} operaciones por
-imagen (\MacsFinal{} frente a \MacsResnet{} de MACs). La causa está en la resolución a la que
-trabajan las primeras capas. GestureCNN aplica sus dos primeros bloques a $128\times128$ y
-$64\times64$\,px; estos bloques acumulan el \FracMacsPrimerosBloques{} de las operaciones con
-solo el \FracParamsPrimerosBloques{} de los parámetros. ResNet18, en cambio, reduce la resolución a
-la cuarta parte en sus dos primeras capas (convolución $7\times7$ con paso 2 y \emph{max pooling}).
-Esto explica que una época de GestureCNN tarde \RatioSEpoca{} veces más que una de ResNet18
-(\SepocaFinal{} frente a \SepocaResnet, ambas con lotes de 64; con los lotes de 32 del modelo final,
-\SepocaLoteFinal).
-
-\begin{table}[t]
-  \centering
-  \caption{Coste de GestureCNN y ResNet18 con entradas de $128\times128$. MACs:
-    multiplicaciones-acumulaciones por imagen. s/época: con lotes de 64 en ambos modelos. Latencia
-    con un lote de una imagen (mediana y
-    percentil 95 de 200 pasadas). Equipo: \CPU{} y \GPU.}
-  \label{tab:coste}
-  \small
-  \TablaCoste
-\end{table}
-
-Para la aplicación, sin embargo, lo relevante es la latencia con una sola imagen, y ahí la
-relación se invierte: GestureCNN clasifica un recorte en \LatCpuFinal{} de mediana en la CPU del
-portátil y en \LatCudaFinal{} en la GPU, frente a \LatCpuResnet{} y \LatCudaResnet{} de ResNet18.
-Con lotes de 64 imágenes el tiempo depende sobre todo del número de operaciones, pero con una sola
-imagen pesa más el coste fijo de lanzar cada capa, y ResNet18 tiene el doble de convoluciones (20
-frente a 10). En cualquier caso, ambos modelos caben holgadamente en los 33\,ms por fotograma de
-una cámara a 30\,fps, incluso sin GPU, de modo que el clasificador no será el cuello de botella de
-la demo. Si hiciera falta reducir el coste, la primera medida sería añadir paso 2 a
-la primera convolución de GestureCNN, que es donde se concentra el cálculo.

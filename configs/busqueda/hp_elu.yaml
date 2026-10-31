@@ -1,3 +1,2 @@
-# Búsqueda de hiperparámetros: completo con un solo cambio. Activación ELU en lugar de ReLU.
 name: hp_elu
 activation: elu

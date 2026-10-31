@@ -15,7 +15,7 @@ import argparse
 from pathlib import Path
 
 import matplotlib
-matplotlib.use("Agg")                           # sin ventana: solo se guarda a fichero
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -29,12 +29,10 @@ def load_history(exp_dir):
 
 
 def best_epoch(history):
-    """Época con la menor val_loss: la que tiene los pesos de best.pt."""
     return int(history.loc[history["val_loss"].idxmin(), "epoch"])
 
 
 def lr_changes(history):
-    """[(época, nuevo lr)] de las épocas cuyo lr es distinto al de la anterior."""
     changed = history["lr"].ne(history["lr"].shift()) & history.index.to_series().gt(0)
     return list(zip(history.loc[changed, "epoch"].astype(int), history.loc[changed, "lr"]))
 
@@ -64,7 +62,6 @@ def plot_experiment(exp_dir, path=None):
 
 
 def plot_comparison(exp_dirs, path=FIG_DIR / "comparacion_curvas.png"):
-    """Curvas de val de varios experimentos superpuestas; un punto en la mejor época de cada uno."""
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     for exp_dir in map(Path, exp_dirs):
         h = load_history(exp_dir)

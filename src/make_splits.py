@@ -25,29 +25,26 @@ from src.common import CLASSES, DATA_DIR, SEED, SPLITS_CSV, STATS_JSON
 from src.prepare_data import CROPS_CSV, TABLES_DIR
 
 SPLITS = ("train", "val", "test")
-FOLDS = {"train": 14, "val": 3, "test": 3}     # trozos de 5 % -> 70/15/15
+FOLDS = {"train": 14, "val": 3, "test": 3}
 
 
 def balance(df, seed=SEED):
-    """Deja no_gesture con tantas manos como la media de los gestos; el resto de clases intacto."""
     gestures = df[df["label"] != "no_gesture"]
     n = round(gestures["label"].value_counts().mean())
     kept = df[df["label"] == "no_gesture"].sample(n, random_state=seed)
-    return pd.concat([gestures, kept]).sort_index()        # se conserva el orden de crops.csv
+    return pd.concat([gestures, kept]).sort_index()
 
 
 def assign_splits(df, seed=SEED):
-    """Columna split según el trozo de StratifiedGroupKFold al que cae cada persona."""
     sgkf = StratifiedGroupKFold(n_splits=sum(FOLDS.values()), shuffle=True, random_state=seed)
     fold = np.empty(len(df), dtype=int)
     for i, (_, idx) in enumerate(sgkf.split(df, df["label"], groups=df["user_id"])):
-        fold[idx] = i                                       # idx: filas del trozo de test de la vuelta i
-    split_of_fold = [s for s in SPLITS for _ in range(FOLDS[s])]   # 14 x train, 3 x val, 3 x test
+        fold[idx] = i
+    split_of_fold = [s for s in SPLITS for _ in range(FOLDS[s])]
     return df.assign(split=[split_of_fold[f] for f in fold])
 
 
 def channel_stats(paths):
-    """Media y desviación por canal RGB en escala [0, 1], acumulando suma y suma de cuadrados."""
     s, s2, n = np.zeros(3), np.zeros(3), 0
     for p in paths:
         a = np.asarray(Image.open(DATA_DIR / p).convert("RGB"), dtype=np.float64) / 255
@@ -55,7 +52,7 @@ def channel_stats(paths):
         s2 += (a ** 2).sum(axis=(0, 1))
         n += a.shape[0] * a.shape[1]
     mean = s / n
-    std = np.sqrt(s2 / n - mean ** 2)                       # Var = E[x²] - E[x]²
+    std = np.sqrt(s2 / n - mean ** 2)
     return {"mean": mean.round(6).tolist(), "std": std.round(6).tolist()}
 
 
